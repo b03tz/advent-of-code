@@ -16,26 +16,15 @@ namespace AdventOfCode2021.Day_2
             Part2(lines);
         }
 
-        private (Direction, int) MapLine(string line)
+        private (string, int) MapLine(string line)
         {
             var parts = line.Split(' ');
             var count = Convert.ToInt32(parts[1].Trim());
-            
-            Direction direction;
-            switch (parts[0].Trim().ToLower())
-            {
-                case "forward":
-                    return (Direction.Forward, count);
-                case "up":
-                    return (Direction.Up, count);
-                case "down":
-                    return (Direction.Down, count);
-            }
 
-            return (Direction.Down, 0);
+            return (parts[0].Trim().ToLower(), count);
         }
 
-        public void Part1(List<(Direction, int)> input)
+        public static void Part1(List<(string, int)> input)
         {
             var x = 0;
             var y = 0;
@@ -44,13 +33,13 @@ namespace AdventOfCode2021.Day_2
             {
                 switch (line.Item1)
                 {
-                    case Direction.Forward:
+                    case "forward":
                         x += line.Item2;
                         break;
-                    case Direction.Down:
+                    case "down":
                         y += line.Item2;
                         break;
-                    case Direction.Up:
+                    case "up":
                         y -= line.Item2;
                         break;
                 }
@@ -59,7 +48,7 @@ namespace AdventOfCode2021.Day_2
             Console.WriteLine($"Total x: {x}, total y: {y}, multiplied: {x * y}");
         }
 
-        public void Part2(List<(Direction, int)> input)
+        public static void Part2(List<(string, int)> input)
         {
             var x = 0;
             var y = 0;
@@ -69,14 +58,14 @@ namespace AdventOfCode2021.Day_2
             {
                 switch (line.Item1)
                 {
-                    case Direction.Forward:
+                    case "forward":
                         x += line.Item2;
                         y += (aim * line.Item2);
                         break;
-                    case Direction.Down:
+                    case "down":
                         aim += line.Item2;
                         break;
-                    case Direction.Up:
+                    case "up":
                         aim -= line.Item2;
                         break;
                 }

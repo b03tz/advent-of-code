@@ -16,7 +16,7 @@ namespace AdventOfCode2021.Day_1
             Part2(lines);
         }
 
-        private void Part1(List<int> lines)
+        private static void Part1(List<int> lines)
         {
             int? previous = null;
             int increases = 0;
@@ -30,9 +30,7 @@ namespace AdventOfCode2021.Day_1
                 }
 
                 if (line > previous)
-                {
                     increases++;
-                }
                 
                 previous = line;
             }
@@ -40,14 +38,14 @@ namespace AdventOfCode2021.Day_1
             Console.WriteLine($"Total number of increases: {increases}");
         }
 
-        private void Part2(List<int> lines)
+        private static void Part2(List<int> lines)
         {
-            int[] slidingWindow = new int[3] { 0, 1, 2 };
+            int[] slidingWindow = { 0, 1, 2 };
 
             int? previous = null;
             int increases = 0;
 
-            while (slidingWindow[2] < lines.Count())
+            while (slidingWindow[2] < lines.Count)
             {
                 var result = lines[slidingWindow[0]] + lines[slidingWindow[1]] + lines[slidingWindow[2]];
 
@@ -58,9 +56,7 @@ namespace AdventOfCode2021.Day_1
                 }
 
                 if (result > previous)
-                {
                     increases++;
-                }
 
                 previous = result;
                 slidingWindow[0]++;

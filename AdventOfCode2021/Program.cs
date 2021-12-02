@@ -6,19 +6,35 @@ namespace AdventOfCode2021
 {
     class Program
     {
+        private const int CurrentDay = 2;
+        
         static void Main(string[] args)
         {
-            Day2();
+            for (var i = 1; i <= 2; i++)
+            {
+                OutputDay(i);
+            }
         }
 
-        static void Day1()
+        static void OutputDay(int dayNumber)
         {
-            new Day1();
-        }
-        
-        static void Day2()
-        {
-            new Day2();
+            var additionalSpace = " ";
+            if (dayNumber > 9)
+            {
+                additionalSpace = "";
+            }
+            
+            Console.WriteLine("+___________________________________________+");
+            Console.WriteLine($"| Output for day {dayNumber}                         {additionalSpace}|");
+            Console.WriteLine("+___________________________________________+");
+
+            var type = Type.GetType($"AdventOfCode2021.Day_{dayNumber}.Day{dayNumber}");
+            
+            if (type == null)
+                throw new ApplicationException($"Day {dayNumber} does not exist!");
+            
+            Activator.CreateInstance(type);
+            Console.WriteLine("\n");
         }
     }
 }
