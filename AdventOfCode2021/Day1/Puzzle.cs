@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace AdventOfCode2021.Day_1
+namespace AdventOfCode2021.Day1
 {
-    public class Day1
+    public class Puzzle
     {
-        public Day1()
+        public Puzzle()
         {
-            var content = File.ReadAllText("Day 1\\input.txt");
+            var content = File.ReadAllText("Day1\\input.txt");
             var lines = content.Split("\n").Select(x => Convert.ToInt32(x)).ToList();
             
             Part1(lines);

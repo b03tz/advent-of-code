@@ -1,6 +1,4 @@
 ﻿using System;
-using AdventOfCode2021.Day_1;
-using AdventOfCode2021.Day_2;
 
 namespace AdventOfCode2021
 {
@@ -28,7 +26,7 @@ namespace AdventOfCode2021
             Console.WriteLine($"| Output for day {dayNumber}                         {additionalSpace}|");
             Console.WriteLine("+___________________________________________+");
 
-            var type = Type.GetType($"AdventOfCode2021.Day_{dayNumber}.Day{dayNumber}");
+            var type = Type.GetType($"AdventOfCode2021.Day{dayNumber}.Puzzle");
             
             if (type == null)
                 throw new ApplicationException($"Day {dayNumber} does not exist!");
