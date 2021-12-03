@@ -4,11 +4,12 @@ namespace AdventOfCode2021
 {
     class Program
     {
-        private const int CurrentDay = 2;
+        private const int SkipDays = 0;
+        private const int CurrentDay = 3;
         
         static void Main(string[] args)
         {
-            for (var i = 1; i <= 2; i++)
+            for (var i = 1 + SkipDays; i <= CurrentDay; i++)
             {
                 OutputDay(i);
             }
