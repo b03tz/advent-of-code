@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
+        <Nullable>enable</Nullable>
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
@@ -38,6 +39,24 @@
       <Content Include="Day5\input.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <None Remove="Day6\testinput.txt" />
+      <Content Include="Day6\testinput.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Day6\input.txt" />
+      <Content Include="Day6\input.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Cloo, Version=0.9.1.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>LinkedLibraries\Cloo.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Cloo.clSharp" Version="1.0.1" />
     </ItemGroup>
 
 </Project>
