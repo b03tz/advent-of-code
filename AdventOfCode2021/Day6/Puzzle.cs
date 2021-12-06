@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace AdventOfCode2021.Day6
 {
     public class Puzzle
     {
-        public Dictionary<int, long> LanternFishes = new Dictionary<int, long>();
+        public Dictionary<int, BigInteger> LanternFishes = new Dictionary<int, BigInteger>();
         
         public Puzzle()
         {
@@ -36,16 +37,18 @@ namespace AdventOfCode2021.Day6
             for (var i = 1; i <= totalDays; i++)
                 Pass1Day();
 
-            long result = LanternFishes.Select(x => x.Value).Sum();
+            BigInteger result = 0;
+            foreach (KeyValuePair<int, BigInteger> fish in LanternFishes)
+                result += fish.Value;
             
-            Console.WriteLine($"256 days passed {result} fish spawned");
+            Console.WriteLine($"{totalDays} days passed {result} fish spawned");
         }
         
         private void Pass1Day()
         {
-            var newFishDictionary = new Dictionary<int, long>();
+            var newFishDictionary = new Dictionary<int, BigInteger>();
             
-            foreach (KeyValuePair<int, long> fish in LanternFishes)
+            foreach (KeyValuePair<int, BigInteger> fish in LanternFishes)
                 newFishDictionary[fish.Key - 1] = fish.Value;
             
             LanternFishes = newFishDictionary;
