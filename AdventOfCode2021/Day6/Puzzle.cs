@@ -8,7 +8,6 @@ namespace AdventOfCode2021.Day6
 {
     public class Puzzle
     {
-        //public List<LanternFish> LanternFishes = new List<LanternFish>();
         public Dictionary<long, long> LanternFishes = new Dictionary<long, long>();
         
         public Puzzle()
@@ -66,7 +65,6 @@ namespace AdventOfCode2021.Day6
 
             if (newFishDictionary.ContainsKey(-1))
             {
-                // Number of new fish that need to be spawned is in newFishDictionary[-1]
                 var newFishCount = newFishDictionary[-1];
                 
                 if (newFishDictionary.ContainsKey(6))
