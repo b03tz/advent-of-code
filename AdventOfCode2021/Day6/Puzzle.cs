@@ -20,13 +20,10 @@ namespace AdventOfCode2021.Day6
             {
                 var fishTimer = startingFishes[i];
 
-                if (LanternFishes.ContainsKey(fishTimer))
-                {
-                    LanternFishes[fishTimer] += 1;
-                    continue;
-                }
+                if (!LanternFishes.ContainsKey(fishTimer))
+                    LanternFishes[fishTimer] = 0;
                     
-                LanternFishes[fishTimer] = 1;
+                LanternFishes[fishTimer] += 1;
             }
 
             var s = new Stopwatch();
@@ -41,15 +38,9 @@ namespace AdventOfCode2021.Day6
             var totalDays = 256;
             
             for (var i = 1; i <= totalDays; i++)
-            {
                 Pass1Day();
-            }
 
-            long result = 0;
-            foreach (KeyValuePair<long, long> pair in LanternFishes)
-            {
-                result += pair.Value;
-            }
+            long result = LanternFishes.Select(x => x.Value).Sum();
             
             Console.WriteLine($"256 days passed {result} fish spawned");
         }
@@ -59,28 +50,24 @@ namespace AdventOfCode2021.Day6
             var newFishDictionary = new Dictionary<long, long>();
             
             foreach (KeyValuePair<long, long> fish in LanternFishes)
-            {
                 newFishDictionary[fish.Key - 1] = fish.Value;
-            }
-
-            if (newFishDictionary.ContainsKey(-1))
-            {
-                var newFishCount = newFishDictionary[-1];
-                
-                if (newFishDictionary.ContainsKey(6))
-                    newFishDictionary[6] += newFishDictionary[-1];
-                else
-                    newFishDictionary[6] = newFishDictionary[-1];
-                
-                if (newFishDictionary.ContainsKey(8))
-                    newFishDictionary[8] += newFishCount;
-                else                     
-                    newFishDictionary[8] = newFishCount;
-                
-                newFishDictionary.Remove(-1);
-            }
             
             LanternFishes = newFishDictionary;
+
+            if (!LanternFishes.ContainsKey(-1))
+                return;
+            
+            if (!LanternFishes.ContainsKey(6))
+                LanternFishes[6] = 0;
+                
+            LanternFishes[6] += LanternFishes[-1];
+
+            if (!LanternFishes.ContainsKey(8))
+                LanternFishes[8] = 0;
+            
+            LanternFishes[8] += LanternFishes[-1];
+            
+            LanternFishes.Remove(-1);
         }
     }
 }
