@@ -8,7 +8,7 @@ namespace AdventOfCode2021.Day6
 {
     public class Puzzle
     {
-        public Dictionary<long, long> LanternFishes = new Dictionary<long, long>();
+        public Dictionary<int, long> LanternFishes = new Dictionary<int, long>();
         
         public Puzzle()
         {
@@ -26,11 +26,7 @@ namespace AdventOfCode2021.Day6
                 LanternFishes[fishTimer] += 1;
             }
 
-            var s = new Stopwatch();
-            s.Start();
             Part1();
-            
-            Console.WriteLine($"Solution found in {s.ElapsedMilliseconds} ms");
         }
 
         private void Part1()
@@ -47,9 +43,9 @@ namespace AdventOfCode2021.Day6
         
         private void Pass1Day()
         {
-            var newFishDictionary = new Dictionary<long, long>();
+            var newFishDictionary = new Dictionary<int, long>();
             
-            foreach (KeyValuePair<long, long> fish in LanternFishes)
+            foreach (KeyValuePair<int, long> fish in LanternFishes)
                 newFishDictionary[fish.Key - 1] = fish.Value;
             
             LanternFishes = newFishDictionary;
