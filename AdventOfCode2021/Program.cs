@@ -10,10 +10,15 @@ namespace AdventOfCode2021
         
         static void Main(string[] args)
         {
+            var timer = new Stopwatch();
+            timer.Start();
+            
             for (var i = 1 + SkipDays; i <= CurrentDay; i++)
             {
                 OutputDay(i);
             }
+
+            Console.WriteLine($"****** Solving day {SkipDays + 1} to {CurrentDay} took {timer.ElapsedMilliseconds} ms");
         }
 
         static void OutputDay(int dayNumber)
