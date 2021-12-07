@@ -101,11 +101,10 @@ namespace AdventOfCode2021.Day5
                 }
                 
                 // Diagonal lines
-                int fromX, fromY, toX, toY;
-                fromX = c.SourceX;
-                fromY = c.SourceY;
-                toX = c.DestinationX;
-                toY = c.DestinationY;
+                var fromX = c.SourceX;
+                var fromY = c.SourceY;
+                var toX = c.DestinationX;
+                var toY = c.DestinationY;
                 
                 if (c.SourceX > c.DestinationX)
                 {
@@ -140,6 +139,18 @@ namespace AdventOfCode2021.Day5
             });
         }
 
+        private void ParseInput(List<string> lines)
+        {
+            Coordinates = lines
+            .Select(x => x.Replace(" -> ", ",").Split(','))
+            .Select(x => new Coordinate(
+                Convert.ToInt32(x[0]),
+                Convert.ToInt32(x[1]),
+                Convert.ToInt32(x[2]),
+                Convert.ToInt32(x[3])
+            )).ToList();
+        }
+        
         private void PrintGrid(int[,] grid)
         {
             for (var y = 0; y < grid.GetLength(1); y++)
@@ -151,18 +162,6 @@ namespace AdventOfCode2021.Day5
                 
                 Console.WriteLine(lineOutput);
             }
-        }
-
-        private void ParseInput(List<string> lines)
-        {
-            Coordinates = lines
-            .Select(x => x.Replace(" -> ", ",").Split(','))
-            .Select(x => new Coordinate(
-                Convert.ToInt32(x[0]),
-                Convert.ToInt32(x[1]),
-                Convert.ToInt32(x[2]),
-                Convert.ToInt32(x[3])
-            )).ToList();
         }
     }
 

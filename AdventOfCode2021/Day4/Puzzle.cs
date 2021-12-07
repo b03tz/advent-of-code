@@ -7,15 +7,15 @@ namespace AdventOfCode2021.Day4
 {
     public class Puzzle
     {
-        private List<int> CalledNumbers = new List<int>();
-        private List<BingoGrid[,]> BingoGrids = new List<BingoGrid[,]>();
+        private readonly List<int> calledNumbers = new List<int>();
+        private readonly List<BingoGrid[,]> bingoGrids = new List<BingoGrid[,]>();
         
         public Puzzle()
         {
             var content = File.ReadAllText("Day4\\input.txt");
             var lines = content.Split("\n").ToList();
             
-            CalledNumbers.AddRange(lines.First().Split(',').Select(x => Convert.ToInt32(x)));
+            calledNumbers.AddRange(lines.First().Split(',').Select(x => Convert.ToInt32(x)));
 
             ParseBingoGrids(lines);
 
@@ -25,7 +25,7 @@ namespace AdventOfCode2021.Day4
         
         private void Part1(List<string> lines)
         {
-            foreach (var call in CalledNumbers)
+            foreach (var call in calledNumbers)
             {
                 CallNumber(call);
                 
@@ -42,17 +42,14 @@ namespace AdventOfCode2021.Day4
             var winningBoards = new List<BingoGrid[,]>();
             var lastCall = 0;
             
-            foreach (var call in CalledNumbers)
+            foreach (var call in calledNumbers)
             {
                 CallNumber(call, winningBoards);
 
-                foreach (BingoGrid[,] grid in BingoGrids)
+                foreach (var grid in bingoGrids.Where(grid => !winningBoards.Contains(grid) && CheckIfGridWon(grid)))
                 {
-                    if (!winningBoards.Contains(grid) && CheckIfGridWon(grid))
-                    {
-                        lastCall = call;
-                        winningBoards.Add(grid);
-                    }
+                    lastCall = call;
+                    winningBoards.Add(grid);
                 }
             }
 
@@ -71,9 +68,9 @@ namespace AdventOfCode2021.Day4
             return sum;
         }
 
-        private void CallNumber(int number, List<BingoGrid[,]> gridsToSkip = null)
+        private void CallNumber(int number, List<BingoGrid[,]>? gridsToSkip = null)
         {
-            foreach (var grid in BingoGrids)
+            foreach (var grid in bingoGrids)
             {
                 if (gridsToSkip != null && gridsToSkip.Contains(grid))
                     continue;
@@ -87,7 +84,7 @@ namespace AdventOfCode2021.Day4
 
         private BingoGrid[,]? CheckFirstWinningGrid()
         {
-            foreach (var grid in BingoGrids)
+            foreach (var grid in bingoGrids)
                 if (CheckIfGridWon(grid))
                     return grid;
 
@@ -142,7 +139,7 @@ namespace AdventOfCode2021.Day4
                 if (string.IsNullOrWhiteSpace(currentLine))
                 {
                     currentBingoRow = 0;
-                    BingoGrids.Add(currentBingoGrid);
+                    bingoGrids.Add(currentBingoGrid);
                     currentBingoGrid = new BingoGrid[5,5];
                     continue;
                 }
@@ -161,7 +158,7 @@ namespace AdventOfCode2021.Day4
                 currentBingoRow += 1;
             }
             
-            BingoGrids.Add(currentBingoGrid);
+            bingoGrids.Add(currentBingoGrid);
         }
     }
 
