@@ -6,13 +6,12 @@ namespace AdventOfCode2021.Day7
 {
     public class Puzzle
     {
-        private int[] CrabPositions;
+        private readonly int[] crabPositions;
         
         public Puzzle()
         {
             var content = File.ReadAllText("Day7\\input.txt");
-            
-            CrabPositions = content.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
+            crabPositions = content.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
 
             Part1();
             Part2();
@@ -20,8 +19,8 @@ namespace AdventOfCode2021.Day7
 
         public void Part1()
         {
-            var heighest = CrabPositions.Max();
-            var lowest = CrabPositions.Min();
+            var heighest = crabPositions.Max();
+            var lowest = crabPositions.Min();
 
             // First calculate the cheapest starting position by increments of 50 and then the actual accurate position
             var (startingValue, uselessCost) = CalculateCheapestPosition(50, lowest, heighest);
@@ -32,8 +31,8 @@ namespace AdventOfCode2021.Day7
         
         public void Part2()
         {
-            var heighest = CrabPositions.Max();
-            var lowest = CrabPositions.Min();
+            var heighest = crabPositions.Max();
+            var lowest = crabPositions.Min();
             
             // First calculate the cheapest starting position by increments of 50 and then the actual accurate position
             var (startingPosition, uselessCost) = CalculateCheapestPosition(50, lowest, heighest, true);
@@ -46,9 +45,10 @@ namespace AdventOfCode2021.Day7
         {
             var cheapestCost = Int32.MaxValue;
             var cheapestPosition = 0;
+            
             for (var s = lowest; s <= (heighest + increment); s += increment)
             {
-                var cost = CrabPositions
+                var cost = crabPositions
                     .Where(x => x != s)
                     .Select(x => CalculateCost(Math.Abs(s - x), fuelCostIncreases))
                     .Sum();
