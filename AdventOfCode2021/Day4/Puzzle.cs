@@ -30,12 +30,10 @@ namespace AdventOfCode2021.Day4
                 CallNumber(call);
                 
                 var winningGrid = CheckFirstWinningGrid();
-
-                if (winningGrid != null)
-                {
-                    Console.WriteLine($"Final score: {call * CalculateGridSum(winningGrid)}");
-                    break;
-                }
+                if (winningGrid == null) continue;
+                
+                Console.WriteLine($"Final score: {call * CalculateGridSum(winningGrid)}");
+                break;
             }
         }
         
@@ -66,9 +64,9 @@ namespace AdventOfCode2021.Day4
         {
             var sum = 0;
             for (int i = 0; i < grid.GetLength(0); i++)
-            for (int j = 0; j < grid.GetLength(0); j++)
-                if (!grid[i, j].Called)
-                    sum += grid[i, j].Number;
+                for (int j = 0; j < grid.GetLength(0); j++)
+                    if (!grid[i, j].Called)
+                        sum += grid[i, j].Number;
 
             return sum;
         }
@@ -87,7 +85,7 @@ namespace AdventOfCode2021.Day4
             }
         }
 
-        private BingoGrid[,] CheckFirstWinningGrid()
+        private BingoGrid[,]? CheckFirstWinningGrid()
         {
             foreach (var grid in BingoGrids)
                 if (CheckIfGridWon(grid))
@@ -153,12 +151,11 @@ namespace AdventOfCode2021.Day4
 
                 for (var i = 0; i < parsedColumns.Count(); i++)
                 {
-                    var foo = new BingoGrid
+                    currentBingoGrid[currentBingoRow, i] = new BingoGrid
                     {
                         Number = parsedColumns[i],
                         Called = false
                     };
-                    currentBingoGrid[currentBingoRow, i] = foo;
                 }
 
                 currentBingoRow += 1;

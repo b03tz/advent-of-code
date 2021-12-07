@@ -6,13 +6,13 @@ namespace AdventOfCode2021.Day7
 {
     public class Puzzle
     {
-        private int[] ShipPositions;
+        private int[] CrabPositions;
         
         public Puzzle()
         {
             var content = File.ReadAllText("Day7\\input.txt");
             
-            ShipPositions = content.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
+            CrabPositions = content.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
 
             Part1();
             Part2();
@@ -20,15 +20,15 @@ namespace AdventOfCode2021.Day7
 
         public void Part1()
         {
-            var heighest = ShipPositions.Max();
-            var lowest = ShipPositions.Min();
+            var heighest = CrabPositions.Max();
+            var lowest = CrabPositions.Min();
 
             // Find the cheapest goto position
             int leastCost = Int32.MaxValue;
             int gotoPos = 0;
             for (var i = lowest; i <= heighest; i++)
             {
-                var cost = ShipPositions
+                var cost = CrabPositions
                     .Where(x => x != i)
                     .Select(x => Math.Abs(i - x))
                     .Sum();
@@ -45,15 +45,15 @@ namespace AdventOfCode2021.Day7
         
         public void Part2()
         {
-            var heighest = ShipPositions.Max();
-            var lowest = ShipPositions.Min();
+            var heighest = CrabPositions.Max();
+            var lowest = CrabPositions.Min();
 
             // Find the cheapest goto position
             int leastCost = Int32.MaxValue;
             int gotoPos = 0;
             for (var i = lowest; i <= heighest; i++)
             {
-                var cost = ShipPositions
+                var cost = CrabPositions
                     .Where(x => x != i)
                     .Select(x => CalculateCost(Math.Abs(i - x)))
                     .Sum();
