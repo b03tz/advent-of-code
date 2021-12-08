@@ -47,8 +47,6 @@ namespace AdventOfCode2021.Day8
             Part2();
         }
         
-            //                        7                 4
-        //acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf
         private void Part1()
         {
             var instances = 0;              //1  4  7  8
@@ -60,19 +58,19 @@ namespace AdventOfCode2021.Day8
                 var lengths = characters.Select(x => x.Length);
 
                 foreach (var length in lengths)
-                {
                     if (uniqueInstances.Contains(length))
                         instances++;
-                }
             }
             
-            Console.WriteLine($"Unique instances: {instances}");
+            Console.WriteLine($"Part 1 - unique instances: {instances}");
         }
 
         private void Part2()
         {
-            var standardDigits = Numbers.Select(x => CreateDigit("0123456", x).Cast<bool>()).ToList();
+            var standardDigits = Numbers.Select(x => CreateDigitString("0123456", x)).ToList();
 
+            Console.WriteLine("Part 2 - Calculating...");
+            
             List<string> outputNumbers = new List<string>();
             for (var i = 0; i < SignalPatterns.Count; i++)
             {
@@ -87,25 +85,25 @@ namespace AdventOfCode2021.Day8
 
                 var outputLetters = output.Split(' ');
                 var stringOutput = "";
+                
                 foreach (var letter in outputLetters)
                 {
                     var letterBinary = ToBinary(permutation, letter);
-                    var createdDigit = CreateDigit(numberSegment, letterBinary).Cast<bool>();
-                    var digit = standardDigits.FindIndex(x => x.SequenceEqual(createdDigit));
+                    var createdDigit = CreateDigitString(numberSegment, letterBinary);
+                    var digit = standardDigits.FindIndex(x => x == createdDigit);
 
                     stringOutput += digit.ToString();
                 }
                 
                 outputNumbers.Add(stringOutput);
-                Console.WriteLine(stringOutput);
             }
             
-            Console.WriteLine($"Total added: {outputNumbers.Select(x => Convert.ToInt32(x)).Sum()}");
+            Console.WriteLine($"Part 2 - Total added: {outputNumbers.Select(x => Convert.ToInt32(x)).Sum()}");
         }
 
         public (string, string) GetPermutation(string[] letters)
         {
-            var standardDigits = Numbers.Select(x => CreateDigit("0123456", x).Cast<bool>()).ToList();
+            var standardDigits = Numbers.Select(x => CreateDigitString("0123456", x)).ToList();
 
             // Try to work out board logic based on known numbers
             var lastPermutation = "";
@@ -118,9 +116,9 @@ namespace AdventOfCode2021.Day8
                 foreach (var letter in letters)
                 {
                     var letterBinary = ToBinary(possiblePermutation, letter);
-                    var createdDigit = CreateDigit(numberSegment, letterBinary).Cast<bool>();
+                    var createdDigit = CreateDigitString(numberSegment, letterBinary);
 
-                    if (!standardDigits.Any(x => x.SequenceEqual(createdDigit)))
+                    if (standardDigits.All(x => x != createdDigit))
                     {
                         foundPermutation = false;
                         break;
@@ -157,84 +155,20 @@ namespace AdventOfCode2021.Day8
 
             return output.ToString();
         }
-
-        private bool[,] CreateDigit(string numericSegment, string input)
+        
+        private string CreateDigitString(string numericSegment, string input)
         {
-            var output = new bool[5, 3];
+            var output = new StringBuilder("0000000");
 
             for (var i = 0; i < numericSegment.Length; i++)
             {
                 if (Convert.ToInt32(input.Substring(i, 1)) == 0)
                     continue;
-                
-                /*
-                 * This function generates an array that maps to segments
-                 * Segments are numbered 0 to 6 from top to bottom -> left to right
-                 *
-                 * 000
-                 * 1.2
-                 * 333
-                 * 4.5
-                 * 666
-                 * 
-                 *  ███    ..█    ███    ███    █.█    ███    ███ 
-                 *  █.█    ..█    ..█    ..█    █.█    █..    █.. 
-                 *  █.█    ..█    ███    ███    ███    ███    ███ 
-                 *  █.█    ..█    █..    ..█    ..█    ..█    █.█ 
-                 *  ███    ..█    ███    ███    ..█    ███    ███ 
-                 */
-                
-                switch (i)
-                {
-                    case 0:
-                        output[0, 0] = true;
-                        output[0, 1] = true;
-                        output[0, 2] = true;
-                        break;
-                    case 1:
-                        output[1, 0] = true;
-                        break;
-                    case 2:
-                        output[1, 1] = true;
-                        break;
-                    case 3:
-                        output[2, 0] = true;
-                        output[2, 1] = true;
-                        output[2, 2] = true;
-                        break;
-                    case 4:
-                        output[3, 0] = true;
-                        break;
-                    case 5:
-                        output[3, 2] = true;
-                        break;
-                    case 6:
-                        output[4, 0] = true;
-                        output[4, 1] = true;
-                        output[4, 2] = true;
-                        break;
-                }
+
+                output[i] = '1';
             }
 
-            return output;
-        }
-
-        private void PrintNumber(string segment, string input)
-        {
-            var output = CreateDigit(segment, input);
-
-            var outputString = "";
-            for (int i = 0; i < output.GetLength(0); i++)
-            {
-                for (int j = 0; j < output.GetLength(1); j++)
-                {
-                    outputString += output[i, j] ? "X" : ".";
-                }
-
-                outputString += "\n";
-            }
-
-            Console.WriteLine(outputString);
+            return output.ToString();
         }
     }
 }
