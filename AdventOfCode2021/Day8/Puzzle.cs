@@ -21,6 +21,7 @@ namespace AdventOfCode2021.Day8
         private List<string> SignalPatterns = new List<string>();
         private List<string> OutputValues = new List<string>();
         private List<string> StandardDigits = new List<string>();
+        
         public Puzzle()
         {
             var content = File.ReadAllText("Day8\\input.txt");
