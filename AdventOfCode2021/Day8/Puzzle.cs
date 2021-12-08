@@ -20,11 +20,12 @@ namespace AdventOfCode2021.Day8
         
         private List<string> SignalPatterns = new List<string>();
         private List<string> OutputValues = new List<string>();
-        
+        private List<string> StandardDigits = new List<string>();
         public Puzzle()
         {
             var content = File.ReadAllText("Day8\\input.txt");
             Permutations = File.ReadAllText("Day8\\permutations.txt").Split("\n").Select(x => x.Trim()).ToList();
+            StandardDigits = Numbers.Select(x => CreateDigitString("0123456", x)).ToList();
 
             var lines = content.Split("\n");
 
@@ -59,18 +60,20 @@ namespace AdventOfCode2021.Day8
 
         private void Part2()
         {
-            var standardDigits = Numbers.Select(x => CreateDigitString("0123456", x)).ToList();
-
             Console.WriteLine("Part 2 - Calculating...");
-            
+
             List<string> outputNumbers = new List<string>();
+            
             for (var i = 0; i < SignalPatterns.Count; i++)
             {
                 var letters = SignalPatterns[i].Split(' ');
                 var outputLetters = OutputValues[i].Split(' ');
                 
                 // Find a known letter
-                var known = outputLetters.Where(x => new int[] { 2, 4, 3, 7 }.Contains(x.Length)).ToList();
+                var known = outputLetters
+                    .Where(x => new int[] { 2, 4, 3, 7 }
+                    .Contains(x.Length))
+                    .ToList();
                 
                 // Make a copy of all possible permutations
                 var filteredPermutations = new List<string>(Permutations);    
@@ -82,21 +85,24 @@ namespace AdventOfCode2021.Day8
                     {
                         case 2:
                             // It's a one
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[2])).ToList();
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[5])).ToList();
+                            filteredPermutations = filteredPermutations
+                                .Where(x => knownNumber.Contains(x[2]))
+                                .Where(x => knownNumber.Contains(x[5])).ToList();
                             break;
                         case 4:
                             // It's a 4
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[1])).ToList();
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[2])).ToList();
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[3])).ToList();
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[5])).ToList();
+                            filteredPermutations = filteredPermutations
+                                .Where(x => knownNumber.Contains(x[1]))
+                                .Where(x => knownNumber.Contains(x[2]))
+                                .Where(x => knownNumber.Contains(x[3]))
+                                .Where(x => knownNumber.Contains(x[5])).ToList();
                             break;
                         case 3:
                             // It's a 7
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[0])).ToList();
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[2])).ToList();
-                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[5])).ToList();
+                            filteredPermutations = filteredPermutations
+                                .Where(x => knownNumber.Contains(x[0]))
+                                .Where(x => knownNumber.Contains(x[2]))
+                                .Where(x => knownNumber.Contains(x[5])).ToList();
                             break;
                     }
                 }
@@ -109,7 +115,7 @@ namespace AdventOfCode2021.Day8
                 {
                     var letterBinary = ToBinary(permutation, letter);
                     var createdDigit = CreateDigitString(numberSegment, letterBinary);
-                    var digit = standardDigits.FindIndex(x => x == createdDigit);
+                    var digit = StandardDigits.FindIndex(x => x == createdDigit);
 
                     stringOutput += digit.ToString();
                 }
@@ -122,8 +128,6 @@ namespace AdventOfCode2021.Day8
 
         public (string, string) GetPermutation(string[] letters, List<string> permutations)
         {
-            var standardDigits = Numbers.Select(x => CreateDigitString("0123456", x)).ToList();
-
             // Try to work out board logic based on known numbers
             var lastPermutation = "";
             var lastNumberSegment = "";
@@ -137,7 +141,7 @@ namespace AdventOfCode2021.Day8
                     var letterBinary = ToBinary(possiblePermutation, letter);
                     var createdDigit = CreateDigitString(numberSegment, letterBinary);
 
-                    if (standardDigits.All(x => x != createdDigit))
+                    if (StandardDigits.All(x => x != createdDigit))
                     {
                         foundPermutation = false;
                         break;
@@ -158,7 +162,14 @@ namespace AdventOfCode2021.Day8
 
         private string SegmentToNumbers(string segment)
         {
-            return segment.Replace("a", "0").Replace("b", "1").Replace("c", "2").Replace("d", "3").Replace("e", "4").Replace("f", "5").Replace("g", "6");
+            return segment
+                .Replace("a", "0")
+                .Replace("b", "1")
+                .Replace("c", "2")
+                .Replace("d", "3")
+                .Replace("e", "4")
+                .Replace("f", "5")
+                .Replace("g", "6");
         }
 
         private string ToBinary(string letterSegment, string letter)
