@@ -72,6 +72,7 @@ namespace AdventOfCode2021.Day8
         private void Part2()
         {
             var standardDigits = Numbers.Select(x => CreateDigit("0123456", x).Cast<bool>()).ToList();
+
             List<string> outputNumbers = new List<string>();
             for (var i = 0; i < SignalPatterns.Count; i++)
             {
@@ -82,39 +83,14 @@ namespace AdventOfCode2021.Day8
                 var letters = signal.Split(' ');
 
                 // Try to work out board logic based on known numbers
-                var lastPermutation = "";
-                var lastNumberSegment = "";
-                foreach (var possiblePermutation in Permutations)
-                {
-                    var numberSegment = SegmentToNumbers(possiblePermutation);
-                    var foundPermutation = true;
-
-                    foreach (var letter in letters)
-                    {
-                        var letterBinary = ToBinary(possiblePermutation, letter);
-                        var createdDigit = CreateDigit(numberSegment, letterBinary).Cast<bool>();
-
-                        if (!standardDigits.Any(x => x.SequenceEqual(createdDigit)))
-                        {
-                            foundPermutation = false;
-                        }
-                    }
-
-                    if (foundPermutation)
-                    {
-                        lastPermutation = possiblePermutation;
-                        lastNumberSegment = numberSegment;
-
-                        break;
-                    }
-                }
+                var (permutation, numberSegment) = GetPermutation(letters);
 
                 var outputLetters = output.Split(' ');
                 var stringOutput = "";
                 foreach (var letter in outputLetters)
                 {
-                    var letterBinary = ToBinary(lastPermutation, letter);
-                    var createdDigit = CreateDigit(lastNumberSegment, letterBinary).Cast<bool>();
+                    var letterBinary = ToBinary(permutation, letter);
+                    var createdDigit = CreateDigit(numberSegment, letterBinary).Cast<bool>();
                     var digit = standardDigits.FindIndex(x => x.SequenceEqual(createdDigit));
 
                     stringOutput += digit.ToString();
@@ -125,6 +101,42 @@ namespace AdventOfCode2021.Day8
             }
             
             Console.WriteLine($"Total added: {outputNumbers.Select(x => Convert.ToInt32(x)).Sum()}");
+        }
+
+        public (string, string) GetPermutation(string[] letters)
+        {
+            var standardDigits = Numbers.Select(x => CreateDigit("0123456", x).Cast<bool>()).ToList();
+
+            // Try to work out board logic based on known numbers
+            var lastPermutation = "";
+            var lastNumberSegment = "";
+            foreach (var possiblePermutation in Permutations)
+            {
+                var numberSegment = SegmentToNumbers(possiblePermutation);
+                var foundPermutation = true;
+
+                foreach (var letter in letters)
+                {
+                    var letterBinary = ToBinary(possiblePermutation, letter);
+                    var createdDigit = CreateDigit(numberSegment, letterBinary).Cast<bool>();
+
+                    if (!standardDigits.Any(x => x.SequenceEqual(createdDigit)))
+                    {
+                        foundPermutation = false;
+                        break;
+                    }
+                }
+
+                if (foundPermutation)
+                {
+                    lastPermutation = possiblePermutation;
+                    lastNumberSegment = numberSegment;
+
+                    break;
+                }
+            }
+
+            return (lastPermutation, lastNumberSegment);
         }
 
         private string SegmentToNumbers(string segment)
@@ -148,51 +160,58 @@ namespace AdventOfCode2021.Day8
 
         private bool[,] CreateDigit(string numericSegment, string input)
         {
-            var output = new bool[7, 7];
+            var output = new bool[5, 3];
 
             for (var i = 0; i < numericSegment.Length; i++)
             {
                 if (Convert.ToInt32(input.Substring(i, 1)) == 0)
                     continue;
                 
+                /*
+                 * This function generates an array that maps to segments
+                 * Segments are numbered 0 to 6 from top to bottom -> left to right
+                 *
+                 * 000
+                 * 1.2
+                 * 333
+                 * 4.5
+                 * 666
+                 * 
+                 *  ███    ..█    ███    ███    █.█    ███    ███ 
+                 *  █.█    ..█    ..█    ..█    █.█    █..    █.. 
+                 *  █.█    ..█    ███    ███    ███    ███    ███ 
+                 *  █.█    ..█    █..    ..█    ..█    ..█    █.█ 
+                 *  ███    ..█    ███    ███    ..█    ███    ███ 
+                 */
+                
                 switch (i)
                 {
                     case 0:
+                        output[0, 0] = true;
                         output[0, 1] = true;
                         output[0, 2] = true;
-                        output[0, 3] = true;
-                        output[0, 4] = true;
-                        output[0, 5] = true;
                         break;
                     case 1:
                         output[1, 0] = true;
-                        output[2, 0] = true;
                         break;
                     case 2:
-                        output[1, 6] = true;
-                        output[2, 6] = true;
+                        output[1, 1] = true;
                         break;
                     case 3:
-                        output[3, 1] = true;
-                        output[3, 2] = true;
-                        output[3, 3] = true;
-                        output[3, 4] = true;
-                        output[3, 5] = true;
+                        output[2, 0] = true;
+                        output[2, 1] = true;
+                        output[2, 2] = true;
                         break;
                     case 4:
-                        output[4, 0] = true;
-                        output[5, 0] = true;
+                        output[3, 0] = true;
                         break;
                     case 5:
-                        output[4, 6] = true;
-                        output[5, 6] = true;
+                        output[3, 2] = true;
                         break;
                     case 6:
-                        output[6, 1] = true;
-                        output[6, 2] = true;
-                        output[6, 3] = true;
-                        output[6, 4] = true;
-                        output[6, 5] = true;
+                        output[4, 0] = true;
+                        output[4, 1] = true;
+                        output[4, 2] = true;
                         break;
                 }
             }
