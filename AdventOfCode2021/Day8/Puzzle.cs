@@ -14,16 +14,8 @@ namespace AdventOfCode2021.Day8
 
         private readonly List<string> Numbers = new List<string>
         {
-            "1110111",
-            "0010010",
-            "1011101",
-            "1011011",
-            "0111010",
-            "1101011",
-            "1101111",
-            "1010010",
-            "1111111",
-            "1111011",
+            "1110111", "0010010", "1011101", "1011011", "0111010", // 0, 1, 2, 3, 4
+            "1101011", "1101111", "1010010", "1111111", "1111011", // 5, 6, 7, 8, 9
         };
         
         private List<string> SignalPatterns = new List<string>();
@@ -74,16 +66,43 @@ namespace AdventOfCode2021.Day8
             List<string> outputNumbers = new List<string>();
             for (var i = 0; i < SignalPatterns.Count; i++)
             {
-                var signal = SignalPatterns[i];
-                var output = OutputValues[i];
+                var letters = SignalPatterns[i].Split(' ');
+                var outputLetters = OutputValues[i].Split(' ');
+                
+                // Find a known letter
+                var known = outputLetters.Where(x => new int[] { 2, 4, 3, 7 }.Contains(x.Length)).ToList();
+                
+                // Make a copy of all possible permutations
+                var filteredPermutations = new List<string>(Permutations);    
 
-                // First convert to dictionary
-                var letters = signal.Split(' ');
+                // Filter permutations based on known
+                foreach (var knownNumber in known)
+                {
+                    switch (knownNumber.Length)
+                    {
+                        case 2:
+                            // It's a one
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[2])).ToList();
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[5])).ToList();
+                            break;
+                        case 4:
+                            // It's a 4
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[1])).ToList();
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[2])).ToList();
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[3])).ToList();
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[5])).ToList();
+                            break;
+                        case 3:
+                            // It's a 7
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[0])).ToList();
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[2])).ToList();
+                            filteredPermutations = filteredPermutations.Where(x => knownNumber.Contains(x[5])).ToList();
+                            break;
+                    }
+                }
 
                 // Try to work out board logic based on known numbers
-                var (permutation, numberSegment) = GetPermutation(letters);
-
-                var outputLetters = output.Split(' ');
+                var (permutation, numberSegment) = GetPermutation(letters, filteredPermutations);
                 var stringOutput = "";
                 
                 foreach (var letter in outputLetters)
@@ -101,14 +120,14 @@ namespace AdventOfCode2021.Day8
             Console.WriteLine($"Part 2 - Total added: {outputNumbers.Select(x => Convert.ToInt32(x)).Sum()}");
         }
 
-        public (string, string) GetPermutation(string[] letters)
+        public (string, string) GetPermutation(string[] letters, List<string> permutations)
         {
             var standardDigits = Numbers.Select(x => CreateDigitString("0123456", x)).ToList();
 
             // Try to work out board logic based on known numbers
             var lastPermutation = "";
             var lastNumberSegment = "";
-            foreach (var possiblePermutation in Permutations)
+            foreach (var possiblePermutation in permutations)
             {
                 var numberSegment = SegmentToNumbers(possiblePermutation);
                 var foundPermutation = true;
