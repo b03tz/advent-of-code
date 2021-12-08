@@ -88,7 +88,6 @@ namespace AdventOfCode2021.Day8
                 {
                     var numberSegment = SegmentToNumbers(possiblePermutation);
                     var foundPermutation = true;
-                    var numberOfMatches = 0;
 
                     foreach (var letter in letters)
                     {
@@ -98,10 +97,6 @@ namespace AdventOfCode2021.Day8
                         if (!standardDigits.Any(x => x.SequenceEqual(createdDigit)))
                         {
                             foundPermutation = false;
-                        }
-                        else
-                        {
-                            numberOfMatches += 1;
                         }
                     }
 
