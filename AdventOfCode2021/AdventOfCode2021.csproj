@@ -59,6 +59,14 @@
       <Content Include="Day8\testinput.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <None Remove="Day8\permutations.txt" />
+      <Content Include="Day8\permutations.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Day8\input.txt" />
+      <Content Include="Day8\input.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <None Remove="Day9\testinput.txt" />
       <Content Include="Day9\testinput.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
