@@ -5,12 +5,14 @@ using System.Linq;
 
 namespace AdventOfCode2021.Day2
 {
-    public class Puzzle
+    public class Puzzle : PuzzleBase
     {
         public Puzzle()
         {
-            var content = File.ReadAllText("Day2\\input.txt");
-            var lines = content.Split("\n").Select(MapLine).ToList();
+            this.Day = 2;
+            this.IsTesting = false;
+            
+            var lines = GetPuzzleLines().Select(MapLine).ToList();
 
             Part1(lines);
             Part2(lines);
