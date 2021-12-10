@@ -7,7 +7,7 @@ namespace AdventOfCode2021.Day10
 {
     public class Puzzle
     {
-        private readonly Dictionary<string, string> ValidPairs = new Dictionary<string, string>
+        private readonly Dictionary<string, string> validPairs = new Dictionary<string, string>
         {
             {"(", ")"},
             {"[", "]"},
@@ -15,7 +15,7 @@ namespace AdventOfCode2021.Day10
             {"<", ">"}
         };
         
-        private readonly Dictionary<string, int> ScoresPart1 = new Dictionary<string, int>
+        private readonly Dictionary<string, int> scoresPart1 = new Dictionary<string, int>
         {
             {")", 3},
             {"]", 57},
@@ -23,7 +23,7 @@ namespace AdventOfCode2021.Day10
             {">", 25137}
         };
 
-        private readonly Dictionary<string, int> ScoresPart2 = new Dictionary<string, int>
+        private readonly Dictionary<string, int> scoresPart2 = new Dictionary<string, int>
         {
             {")", 1},
             {"]", 2},
@@ -75,8 +75,8 @@ namespace AdventOfCode2021.Day10
             }
 
             var score = 0;
-            foreach (var scorePair in ScoresPart1)
-                score += invalidTagList.Count(x => x == scorePair.Key) * ScoresPart1[scorePair.Key];
+            foreach (var scorePair in scoresPart1)
+                score += invalidTagList.Count(x => x == scorePair.Key) * scoresPart1[scorePair.Key];
             
             Console.WriteLine($"Syntax error score: {score}");
         }
@@ -117,28 +117,28 @@ namespace AdventOfCode2021.Day10
             long lineScore = 0;
 
             foreach (var tag in tagList)
-                lineScore = lineScore * 5 + ScoresPart2[GetCloseTag(tag)];
+                lineScore = lineScore * 5 + scoresPart2[GetCloseTag(tag)];
 
             return lineScore;
         }
         
         public bool IsOpenTag(string tag)
         {
-            return ValidPairs.ContainsKey(tag);
+            return validPairs.ContainsKey(tag);
         }
 
         public bool IsCorrectTag(string tag, string comparison)
         {
-            if (ValidPairs.ContainsKey(tag))
-                if (ValidPairs[tag] == comparison)
+            if (validPairs.ContainsKey(tag))
+                if (validPairs[tag] == comparison)
                     return true;
 
-            return ValidPairs.FirstOrDefault(x => x.Value == tag).Key == tag;
+            return validPairs.FirstOrDefault(x => x.Value == tag).Key == tag;
         }
         
         public string GetCloseTag(string openTag)
         {
-            return ValidPairs[openTag];
+            return validPairs[openTag];
         }
     }
 }

@@ -7,8 +7,8 @@ namespace AdventOfCode2021.Day9
 {
     public class Puzzle
     {
-        private readonly Location[,] locations;
-        private List<Location> lowPoints;
+        private readonly Location[,] locations = new Location[1,1];
+        private List<Location> lowPoints = new List<Location>();
         
         public Puzzle()
         {
