@@ -6,7 +6,7 @@ namespace AdventOfCode2021
     class Program
     {
         private const int SkipDays = 0;
-        private const int CurrentDay = 2;
+        private const int CurrentDay = 10;
         
         static void Main(string[] args)
         {

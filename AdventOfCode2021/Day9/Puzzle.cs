@@ -7,8 +7,8 @@ namespace AdventOfCode2021.Day9
 {
     public class Puzzle
     {
-        private readonly Location[,] locations = new Location[1,1];
-        private List<Location> lowPoints = new List<Location>();
+        private readonly Location[,] locations;
+        private List<Location> lowPoints = null!;
         
         public Puzzle()
         {
@@ -22,8 +22,7 @@ namespace AdventOfCode2021.Day9
                 {
                     int depth = Convert.ToInt32(rowNumbers[column].ToString());
                     
-                    if (locations == null)
-                        locations = new Location[lines.Length, line.Length];
+                    locations ??= new Location[lines.Length, line.Length];
 
                     locations[row, column] = new Location
                     {
@@ -37,6 +36,9 @@ namespace AdventOfCode2021.Day9
 
             Part1();
             Part2();
+
+            // Locations can't be null exiting constructor
+            locations ??= new Location[1, 1];
         }
         
         public void Part1()
