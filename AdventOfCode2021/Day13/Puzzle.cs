@@ -23,6 +23,19 @@ namespace AdventOfCode2021.Day13
             Part1();
             Part2();
         }
+        
+        private void Part1()
+        {
+            var newArray = FoldX(655, Grid);
+
+            var dots = 0;
+            for (var i = 0; i < newArray.GetLength(0); i++)
+            for(var x = 0; x < newArray.GetLength(1); x++)
+                if (newArray[i, x])
+                    dots++;
+            
+            Console.WriteLine($"Part 1: total number of dots: {dots}");
+        }
 
         private void Part2()
         {
@@ -41,19 +54,6 @@ namespace AdventOfCode2021.Day13
             
             Console.WriteLine("Part 2 code:");
             PrintGrid(newArray);
-        }
-
-        private void Part1()
-        {
-            var newArray = FoldX(655, Grid);
-
-            var dots = 0;
-            for (var i = 0; i < newArray.GetLength(0); i++)
-                for(var x = 0; x < newArray.GetLength(1); x++)
-                    if (newArray[i, x])
-                        dots++;
-            
-            Console.WriteLine($"Part 1: total number of dots: {dots}");
         }
 
         private bool[,] FoldY(int location, bool[,] array)
@@ -91,7 +91,7 @@ namespace AdventOfCode2021.Day13
         private bool[,] GetRows(bool[,] array, int rows, int startRow = 0)
         {
             var newArray = new bool[rows, array.GetLength(1)];
-
+            
             var rowToAdd = startRow;
             for (var row = 0; row < rows; row++)
             {
@@ -134,7 +134,7 @@ namespace AdventOfCode2021.Day13
                         continue;
                     }
 
-                    line += " ";
+                    line += "░";
                 }
                 
                 Console.WriteLine(line);
