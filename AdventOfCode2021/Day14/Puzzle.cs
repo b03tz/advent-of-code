@@ -7,9 +7,9 @@ namespace AdventOfCode2021.Day14
 {
     public class Puzzle : PuzzleBase
     {
-        private string template;
-        private Dictionary<string, string> insertionRules = new Dictionary<string, string>();
-        private Dictionary<string, long> pairCounts = new Dictionary<string, long>();
+        private readonly string template;
+        private readonly Dictionary<string, string> insertionRules;
+        private readonly Dictionary<string, long> pairCounts = new Dictionary<string, long>();
         
         public Puzzle()
         {
@@ -17,11 +17,7 @@ namespace AdventOfCode2021.Day14
             var lines = this.GetPuzzleLines();
 
             template = lines.First();
-            foreach (var insertionRule in lines.Skip(2))
-            {
-                var rule = insertionRule.Split(" -> ");
-                insertionRules[rule[0].Trim()] = rule[1].Trim();
-            }
+            insertionRules = ToDictionary(LinesToArray(lines.Skip(2), " -> "));
 
             Part1();
             Part2();

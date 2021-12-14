@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace AdventOfCode2021
 {
@@ -63,6 +64,11 @@ namespace AdventOfCode2021
                 return lines.Select(x => x.ToArray().Select(x => x.ToString()).ToArray()).ToList();
                 
             return lines.Select(x => x.Split(separator)).ToList();
+        }
+
+        public Dictionary<string, string> ToDictionary(List<string[]> lines)
+        {
+            return lines.ToDictionary(x => x[0], x => x[1]);
         }
 
         public int[] LinesToInts(IEnumerable<string> lines)
