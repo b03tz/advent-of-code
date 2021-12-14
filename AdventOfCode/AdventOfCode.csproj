@@ -13,6 +13,12 @@
       <Content Include="Year2020\Day2\testinput.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <Content Include="Year2020\Day3\input.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Year2020\Day3\testinput.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="Year2021\Day9\input.txt" />
       <Content Include="Year2021\Day9\testinput.txt" />
       <None Remove="Day1\input.txt" />
