@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -9,11 +11,40 @@ namespace AdventOfCode2021
     {
         public int Day = 0;
         public bool IsTesting = false;
+        public Dictionary<string, long> Timers = new Dictionary<string, long>();
+        private Dictionary<string, Stopwatch> Stopwatches = new Dictionary<string, Stopwatch>();
 
         public void Init(int day, bool isTesting)
         {
             this.Day = day;
             this.IsTesting = isTesting;
+        }
+
+        public void StartTimer(string key)
+        {
+            if (!Timers.ContainsKey(key))
+            {
+                Timers[key] = 0;
+                Stopwatches[key] = new Stopwatch();
+            }
+
+            Stopwatches[key].Reset();
+            Stopwatches[key].Start();
+        }
+
+        public void EndTimer(string key)
+        {
+            Timers[key] += Stopwatches[key].ElapsedMilliseconds;
+            Stopwatches[key].Reset();
+            Stopwatches[key].Stop();
+        }
+
+        public void PrintTimers()
+        {
+            foreach (var pair in Timers)
+            {
+                Console.WriteLine($"{pair.Key}: {pair.Value}");
+            }
         }
         
         public string GetPuzzleText()
