@@ -1,0 +1,107 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <Nullable>enable</Nullable>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Content Include="Year2020\Day2\input.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Year2020\Day2\testinput.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Year2021\Day9\input.txt" />
+      <Content Include="Year2021\Day9\testinput.txt" />
+      <None Remove="Day1\input.txt" />
+      <None Remove="Day2\input.txt" />
+      <Content Include="Year2021\Day10\input.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Year2021\Day10\testinput.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Year2021\Day11\input.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Year2021\Day11\testinput.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Year2021\Day12\input.txt" />
+      <Content Include="Year2021\Day12\testinput.txt" />
+      <Content Include="Year2021\Day13\input.txt" />
+      <Content Include="Year2021\Day13\testinput.txt" />
+      <Content Include="Year2021\Day14\input.txt" />
+      <Content Include="Year2021\Day14\testinput.txt" />
+      <Content Include="Year2021\Day15\input.txt" />
+      <Content Include="Year2021\Day15\testinput.txt" />
+      <Content Include="Year2021\Day16\input.txt" />
+      <Content Include="Year2021\Day16\testinput.txt" />
+      <Content Include="Year2021\Day17\input.txt" />
+      <Content Include="Year2021\Day17\testinput.txt" />
+      <Content Include="Year2021\Day18\input.txt" />
+      <Content Include="Year2021\Day18\testinput.txt" />
+      <Content Include="Year2021\Day19\input.txt" />
+      <Content Include="Year2021\Day19\testinput.txt" />
+      <Content Include="Year2021\Day1\input.txt" />
+      <None Remove="Day3\testinput.txt" />
+      <Content Include="Year2021\Day20\input.txt" />
+      <Content Include="Year2021\Day20\testinput.txt" />
+      <Content Include="Year2021\Day21\input.txt" />
+      <Content Include="Year2021\Day21\testinput.txt" />
+      <Content Include="Year2021\Day22\input.txt" />
+      <Content Include="Year2021\Day22\testinput.txt" />
+      <Content Include="Year2021\Day23\input.txt" />
+      <Content Include="Year2021\Day23\testinput.txt" />
+      <Content Include="Year2021\Day24\input.txt" />
+      <Content Include="Year2021\Day24\testinput.txt" />
+      <Content Include="Year2021\Day25\input.txt" />
+      <Content Include="Year2021\Day25\testinput.txt" />
+      <Content Include="Year2021\Day2\input.txt" />
+      <None Remove="Day3\input.txt" />
+      <None Remove="Day4\testinput.txt" />
+      <Content Include="Year2021\Day3\input.txt" />
+      <Content Include="Year2021\Day3\testinput.txt" />
+      <None Remove="Day4\input.txt" />
+      <None Remove="Day5\testinput.txt" />
+      <Content Include="Year2021\Day4\input.txt" />
+      <Content Include="Year2021\Day4\testinput.txt" />
+      <None Remove="Day5\input.txt" />
+      <None Remove="Day6\testinput.txt" />
+      <Content Include="Year2021\Day5\input.txt" />
+      <Content Include="Year2021\Day5\testinput.txt" />
+      <None Remove="Day6\input.txt" />
+      <None Remove="Day7\testinput.txt" />
+      <Content Include="Year2021\Day6\input.txt" />
+      <Content Include="Year2021\Day6\testinput.txt" />
+      <None Remove="Day7\input.txt" />
+      <None Remove="Day8\testinput.txt" />
+      <Content Include="Year2021\Day7\input.txt" />
+      <Content Include="Year2021\Day7\testinput.txt" />
+      <None Remove="Day8\permutations.txt" />
+      <None Remove="Day8\input.txt" />
+      <None Remove="Day9\testinput.txt" />
+      <Content Include="Year2021\Day8\input.txt" />
+      <Content Include="Year2021\Day8\permutations.txt" />
+      <Content Include="Year2021\Day8\testinput.txt" />
+      <None Remove="Day9\input.txt" />
+      <None Remove="Day10\testinput.txt" />
+      <None Remove="Day10\input.txt" />
+      <None Remove="Day11\input.txt" />
+      <None Remove="Day11\testinput.txt" />
+      <None Remove="Year2020\Day1\testinput.txt" />
+      <Content Include="Year2020\Day1\testinput.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Year2020\Day1\input.txt" />
+      <Content Include="Year2020\Day1\input.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Year2021" />
+    </ItemGroup>
+</Project>
