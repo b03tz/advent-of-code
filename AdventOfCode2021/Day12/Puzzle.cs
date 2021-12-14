@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using AdventOfCode2021.Day11;
 
@@ -8,11 +9,11 @@ namespace AdventOfCode2021.Day12
     public class Puzzle : PuzzleBase
     {
         private Dictionary<string, Cave> CaveSystem = new Dictionary<string, Cave>();
-        private List<string> FoundPaths = new List<string>();
-        
+        private HashSet<string> FoundPaths = new HashSet<string>();
+
         public Puzzle()
         {
-            this.Init(12, true);
+            this.Init(12, false);
             var lines = LinesToArray(this.GetPuzzleLines(), "-");
 
             foreach (var connection in lines)
@@ -66,7 +67,7 @@ namespace AdventOfCode2021.Day12
                 FindPathsPart2(cave, "start," + cave + ",", false);
             }
             
-            Console.WriteLine(FoundPaths.Count());
+            Console.WriteLine(FoundPaths.Count);
         }
 
         private void FindPaths(string start, string currentPath)
@@ -97,16 +98,13 @@ namespace AdventOfCode2021.Day12
         {
             foreach (var cave in CaveSystem[start].Connections)
             {
-                if (cave == currentPath.Substring(currentPath.Length - (cave.Length + 1), cave.Length))
-                    continue;
-
                 // Can only visit small cave once
                 if (cave.ToLower() == cave && currentPath.Contains(cave + ","))
                 {
                     if (!smallCaveVisited)
                         smallCaveVisited = HasSmallCaveBeenVisitedTwice(currentPath);
                     
-                    if (cave == "start" || cave == "end" || smallCaveVisited)
+                    if (smallCaveVisited || cave is "start" or "end")
                         continue;
                 }
                 

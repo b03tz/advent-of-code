@@ -20,8 +20,6 @@ namespace AdventOfCode2021.Day11
             Part2();
         }
 
-
-
         private void Part1()
         {
             var totalFlashes = 0;
