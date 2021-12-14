@@ -7,7 +7,7 @@ namespace AdventOfCode2021.Day14
 {
     public class Puzzle : PuzzleBase
     {
-        private string template = "";
+        private string template;
         private Dictionary<string, string> insertionRules = new Dictionary<string, string>();
         private Dictionary<string, long> pairCounts = new Dictionary<string, long>();
         
@@ -32,11 +32,9 @@ namespace AdventOfCode2021.Day14
             var pairs = CreatePairs(template);
 
             for (var i = 0; i < 10; i++)
-            {
                 pairs = Step(pairs);
-            }
             
-            var result = pairCounts.OrderBy(x => x.Key);
+            var result = pairCounts.OrderBy(x => x.Key).ToList();
             Console.WriteLine($"Result part 1: {result.Select(x => x.Value).Max() - result.Select(x => x.Value).Min()}");
         }
         
@@ -46,11 +44,9 @@ namespace AdventOfCode2021.Day14
             var pairs = CreatePairs(template);
 
             for (var i = 0; i < 40; i++)
-            {
                 pairs = Step(pairs);
-            }
 
-            var result = pairCounts.OrderBy(x => x.Key);
+            var result = pairCounts.OrderBy(x => x.Key).ToList();
             Console.WriteLine($"Result part 2: {result.Select(x => x.Value).Max() - result.Select(x => x.Value).Min()}");
         }
 
@@ -101,7 +97,7 @@ namespace AdventOfCode2021.Day14
                 newPairs[newPair1] = oldValue1 + pair.Value;
                 newPairs[newPair2] = oldValue2 + pair.Value;
 
-                pairCounts[insert] = pairCounts[insert] + pair.Value;
+                pairCounts[insert] += pair.Value;
             }
             
             return newPairs;
