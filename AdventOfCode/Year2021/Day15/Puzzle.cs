@@ -16,14 +16,8 @@ namespace AdventOfCode.Year2021.Day15
             Map = new Tile[lines.Count, lines.First().Length];
 
             for (var row = 0; row < lines.Count; row++)
-                for (var col = 0; col < lines[row].Length; col++)
-                    Map[row, col] = new Tile
-                    {
-                        X = col,
-                        Y = row,
-                        Cost = lines[row][col]
-                    };
-
+            for (var col = 0; col < lines[row].Length; col++)
+                Map[row, col] = new Tile(col, row, lines[row][col]);
 
             Part1();
             Part2();
@@ -69,37 +63,25 @@ namespace AdventOfCode.Year2021.Day15
             }
 
             Console.WriteLine($"Total cost: {totalCost - Map[0,0].Cost} !");
-        }
-
-        private Tile MapNewTile(Tile input)
-        {
-            return new Tile
-            {
-                X = input.X,
-                Y = input.Y,
-                Cost = input.Cost
-            };
-        }
-
-        private string TileLocation(Tile tile)
-        {
-            return $"{tile.Y}{tile.X}";
+            PrintTimers();
         }
 
         private Tile? AStar(Tile start, Tile finish)
         {
-            var openList = new Dictionary<string, Tile> { {TileLocation(start), MapNewTile(start)} };
+            var openList = new Dictionary<string, Tile> { {start.Location, new Tile(
+                start.X,
+                start.Y,
+                start.Cost
+            )} };
             var closedList = new Dictionary<string, Tile>();
 
             while (openList.Any())
             {
-                var leastCost = openList.OrderBy(x => x.Value.CalculateCost).First();
+                var leastCost = openList.OrderBy(x => x.Value.Cost).First();
                 openList.Remove(leastCost.Key);
 
-                if (TileLocation(leastCost.Value) == TileLocation(finish))
-                {
+                if (leastCost.Value.Location == finish.Location)
                     return leastCost.Value;
-                }
 
                 var adjecantTiles = GetAdjecant(leastCost.Value);
 
@@ -108,24 +90,21 @@ namespace AdventOfCode.Year2021.Day15
                     if (successor == finish)
                         return successor;
                     
-                    if (closedList.ContainsKey(TileLocation(successor)))
+                    if (closedList.ContainsKey(successor.Location))
                         continue;
                     
-                    if (openList.ContainsKey(TileLocation(successor)))
+                    if (openList.ContainsKey(successor.Location))
                     {
-                        var existing = openList[TileLocation(successor)];
-                        if (existing.CalculateCost > successor.CalculateCost)
-                        {
-                            // Replace it
-                            openList[TileLocation(successor)] = successor;
-                        }
+                        var existing = openList[successor.Location];
+                        if (existing.Cost > successor.Cost)
+                            openList[successor.Location] = successor;
                         continue;
                     }
                     
-                    openList[TileLocation(successor)] = successor;
+                    openList[successor.Location] = successor;
                 }
 
-                closedList[TileLocation(leastCost.Value)] = leastCost.Value;
+                closedList[leastCost.Value.Location] = leastCost.Value;
             }
 
             return null;
@@ -145,9 +124,13 @@ namespace AdventOfCode.Year2021.Day15
 
             foreach (var pos in positions)
             {
-                var newTile = MapNewTile(Map[pos.y, pos.x]);
-                newTile.Cost = tile.Cost + newTile.Cost;
-                newTile.Parent = tile;
+                var newTile = new Tile(
+                    pos.x,
+                    pos.y,
+                    tile.Cost + Map[pos.y, pos.x].Cost,
+                    tile
+                );
+                
                 result.Add(newTile);
             }
 
@@ -210,11 +193,12 @@ namespace AdventOfCode.Year2021.Day15
 
                         costValue++;
                     }
-                    
-                    newArray[row, column] = MapNewTile(input[actualRow, column]);
-                    newArray[row, column].Cost = costValue;
-                    newArray[row, column].X = column;
-                    newArray[row, column].Y = row;
+
+                    newArray[row, column] = new Tile(
+                        column,
+                        row,
+                        costValue
+                    );
                 }
             }
 
@@ -245,11 +229,12 @@ namespace AdventOfCode.Year2021.Day15
 
                         costValue++;
                     }
-                    
-                    newArray[row, column] = MapNewTile(input[row, actualColumn]);
-                    newArray[row, column].Cost = costValue;
-                    newArray[row, column].X = column;
-                    newArray[row, column].Y = row;
+
+                    newArray[row, column] = new Tile(
+                        column,
+                        row,
+                        costValue
+                    );
                 }
             }
 
@@ -259,12 +244,8 @@ namespace AdventOfCode.Year2021.Day15
     
 
 
-    public class Tile
+    public record Tile(int X, int Y, int Cost, Tile? Parent = null)
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Cost { get; set; }
-        public int CalculateCost => Cost;
-        public Tile? Parent { get; set; }
+        public string Location => $"{Y}{X}";
     }
 }
