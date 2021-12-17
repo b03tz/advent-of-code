@@ -30,11 +30,16 @@ namespace AdventOfCode.Year2021.Day15
             
             var path = AStar(start, finish);
             var totalCost = 0;
+            List<(int X, int Y)> locations = new List<(int x, int y)>();
+            
             while (path != null)
             {
                 totalCost += Map[path.Y, path.X].Cost;
+                locations.Add((path.Y, path.X));
                 path = path.Parent;
             }
+            
+            //PrintMap(locations);
 
             Console.WriteLine($"Total cost: {totalCost - Map[0,0].Cost} !");
         }
