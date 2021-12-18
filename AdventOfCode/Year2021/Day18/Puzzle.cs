@@ -255,6 +255,7 @@ namespace AdventOfCode.Year2021.Day18
             return input;
         }
 
+        // Thanks be to the Code-Magician of XPRTZ TOO (SvtE)
         private PairValue? FindClosestLeft(Pair child)
         {
             var parent = child.Parent;
@@ -263,13 +264,13 @@ namespace AdventOfCode.Year2021.Day18
             {
                 if (parent.LeftValue != child)
                 {
-                    var rootToGoRight = parent.LeftValue;
-                    while (rootToGoRight is not PairValue)
+                    var routeRight = parent.LeftValue;
+                    while (routeRight is not PairValue)
                     {
-                        rootToGoRight = ((Pair)rootToGoRight).RightValue;
+                        routeRight = ((Pair)routeRight).RightValue;
                     }
 
-                    return (PairValue)rootToGoRight;
+                    return (PairValue)routeRight;
                 }
 
                 child = parent;
@@ -279,6 +280,7 @@ namespace AdventOfCode.Year2021.Day18
             return null;
         }
         
+        // Thanks be to the Code-Magician of XPRTZ TOO (SvtE)
         private PairValue? FindClosestRight(Pair child)
         {
             var parent = child.Parent;
@@ -287,13 +289,13 @@ namespace AdventOfCode.Year2021.Day18
             {
                 if (parent.RightValue != child)
                 {
-                    var rootToGoLeft = parent.RightValue;
-                    while (rootToGoLeft is not PairValue)
+                    var routeLeft = parent.RightValue;
+                    while (routeLeft is not PairValue)
                     {
-                        rootToGoLeft = ((Pair)rootToGoLeft).LeftValue;
+                        routeLeft = ((Pair)routeLeft).LeftValue;
                     }
 
-                    return (PairValue)rootToGoLeft;
+                    return (PairValue)routeLeft;
                 }
 
                 child = parent;
