@@ -96,7 +96,6 @@ namespace AdventOfCode.Year2021.Day18
             
             leftNumber = Reduce(leftNumber);
 
-            Console.WriteLine(GetPuzzlePairString(leftNumber));
             Console.WriteLine($"Part 1 - Magnitude: {CalculateMagnitude(leftNumber)}");
         }
         
