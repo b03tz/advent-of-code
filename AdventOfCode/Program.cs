@@ -5,9 +5,9 @@ namespace AdventOfCode
 {
     class Program
     {
-        public static int Year = 2020;
-        public static int SkipDays = 5;
-        public static int CurrentDay = 6;
+        public static int Year = 2021;
+        public static int SkipDays = 17;
+        public static int CurrentDay = 18;
         
         static void Main(string[] args)
         {

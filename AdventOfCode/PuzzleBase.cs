@@ -58,6 +58,27 @@ namespace AdventOfCode
             return File.ReadAllLines(GetPuzzleFilename());
         }
 
+        public void TestExpected(string actual, string expected)
+        {
+            var color = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write("EXPECTED: ");
+            Console.Write(expected);
+            Console.Write("\n");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write("ACTUAL  : ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            if (actual == expected)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+            Console.Write(actual);
+            Console.Write("\n");
+            Console.ForegroundColor = color;
+            Console.WriteLine("---------------------------------");
+        }
+
         public List<string[]> LinesToArray(IEnumerable<string> lines, string separator)
         {
             if (separator == "")
