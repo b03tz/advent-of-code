@@ -11,10 +11,27 @@ namespace AdventOfCode.Year2021.Day18
 {
     public class Puzzle : PuzzleBase
     {
+        private readonly List<Pair> Pairs = new List<Pair>();
+        
         public class Pair
         {
-            public int Number { get; set; }
-            public int Depth { get; set; }
+            public object LeftValue { get; set; }
+            
+            public object RightValue { get; set; }
+
+            public bool IsRegularPair => LeftValue is PairValue && RightValue is PairValue;
+            
+            public Pair? Parent { get; set; }
+        }
+
+        public class PairValue
+        {
+            public PairValue(int value)
+            {
+                this.Value = value;
+            }
+            
+            public int Value { get; set; }
         }
 
         public Puzzle()
@@ -22,293 +39,341 @@ namespace AdventOfCode.Year2021.Day18
             this.Init(18, false);
             var lines = this.GetPuzzleLines();
 
-            TestExpected(CalculateMagnitude(ParsePairs(JArray.Parse("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]"))).ToString(), "3488");
-            TestExpected(CalculateMagnitude(ParsePairs(JArray.Parse("[[1,2],[[3,4],5]]"))).ToString(), "143");
-            TestExpected(CalculateMagnitude(ParsePairs(JArray.Parse("[[[[0,7],4],[[7,8],[6,0]]],[8,1]]"))).ToString(), "1384");
-            TestExpected(CalculateMagnitude(ParsePairs(JArray.Parse("[[[[1,1],[2,2]],[3,3]],[4,4]]"))).ToString(), "445");
-            TestExpected(CalculateMagnitude(ParsePairs(JArray.Parse("[[[[3,0],[5,3]],[4,4]],[5,5]]"))).ToString(), "791");
-
-            return;
-            List<Pair> currentNumber = ParsePairs(JArray.Parse(lines.First()));
-
-            for (var i = 1; i < lines.Length; i++)
-            {
-                List<Pair> second = ParsePairs(JArray.Parse(lines.Skip(i).First()));
-                var input = Add(currentNumber, second);
-                
-                currentNumber = Reduce(input);
-                
-                PrintNumber(currentNumber);
-            }
-            
-            PrintNumber(currentNumber);
-
-            Console.WriteLine($"Magnitude: {CalculateMagnitude(currentNumber)}");
+            Part1(lines);
+            Part2(lines);
         }
 
-        private int CalculateMagnitude(List<Pair> parsePairs)
+        public void Part2(string[] lines)
         {
-            var intList = parsePairs.Select(x => x.Number).ToList();
-            while (intList.Count() > 1)
+            var largestMagnitude = 0;
+            foreach (var line1 in lines)
             {
-                var loop = 0;
-
-                var newList = new List<int>();
-                // Calculate magnitude
-                int i = 0;
-                var offset = 0;
-                for (; i < intList.Count / 2; i++)
+                foreach (var line2 in lines)
                 {
-                    var first = intList[offset];
-                    var second = intList[offset + 1];
+                    if (line1 == line2)
+                        continue;
+
+                    var pair = ParsePairs(JArray.Parse(line1));
+                    var otherPair = ParsePairs(JArray.Parse(line2));
+                    var addition = new Pair();
+                    pair.Parent = addition;
+                    otherPair.Parent = addition;
+                    addition.LeftValue = pair;
+                    addition.RightValue = otherPair;
                     
-                    newList.Add((3 * first) + (2 * second));
-                    loop++;
-                    offset += 2;
+                    addition = Reduce(addition);
+
+                    var magnitude = CalculateMagnitude(addition);
+
+                    if (magnitude > largestMagnitude)
+                        largestMagnitude = magnitude;
                 }
-
-                var end = offset + 1;
-                if (end == intList.Count)
-                    newList.Add(intList.Last());
-
-                intList = newList;
             }
             
-            return intList.First();
+            Console.WriteLine($"Part 2 - Largest magnitude: {largestMagnitude}");
         }
 
-        private List<Pair> Reduce(List<Pair> input)
+        public void Part1(string[] lines)
+        {
+            foreach (var line in lines)
+            {
+                Pairs.Add(ParsePairs(JArray.Parse(line)));
+            }
+            
+            Pair leftNumber = Pairs.First();
+
+            for (var i = 1; i < Pairs.Count; i++)
+            {
+                Pair second = Pairs.Skip(i).First();
+
+                var addition = new Pair();
+                addition.LeftValue = leftNumber;
+                addition.RightValue = second;
+                leftNumber.Parent = addition;
+                second.Parent = addition;
+                leftNumber = Reduce(addition);
+            }
+            
+            leftNumber = Reduce(leftNumber);
+
+            Console.WriteLine(GetPuzzlePairString(leftNumber));
+            Console.WriteLine($"Part 1 - Magnitude: {CalculateMagnitude(leftNumber)}");
+        }
+        
+        private int CalculateMagnitude(Pair input)
+        {
+            var total = 0;
+            if (input.LeftValue is PairValue leftValue)
+            {
+                total += 3 * leftValue.Value;
+            }
+            else if (input.LeftValue is Pair leftPair)
+            {
+                total += 3 * CalculateMagnitude(leftPair);
+            }
+
+            if (input.RightValue is PairValue rightValue)
+            {
+                total += 2 * rightValue.Value;
+            } else if (input.RightValue is Pair rightPair)
+            {
+                total += 2 * CalculateMagnitude(rightPair);
+            }
+
+            return total;
+        }
+
+        private Pair Reduce(Pair input)
         {
             while (true)
             {
                 var explodeResult = Explode(input);
                 if (explodeResult != null)
                 {
-                    //Console.Write("EXPLODE: ");
-                    //PrintNumber(explodeResult);
                     input = explodeResult;
-                    //break;
                     continue;
                 }
 
                 var splitResult = Split(input);
                 if (splitResult != null)
                 {
-                    //Console.Write("SPLIT: ");
-                    //PrintNumber(splitResult);
                     input = splitResult;
                     continue;
                 }
 
-                if (explodeResult == null && splitResult == null)
+                if (splitResult == null && explodeResult == null)
                     break;
             }
 
             return input;
         }
 
-        private void PrintNumber(List<Pair> input)
+        private Pair? Split(Pair input)
         {
-            var color = Console.ForegroundColor;
+            var pairToSplit = GetPairToSplit(input);
 
-            foreach (var number in input)
-            {
-                Console.Write(number.Number);
-                Console.ForegroundColor = ConsoleColor.Green;
-                //Console.Write("("+number.Depth+")");
-                Console.Write(",");
-                Console.ForegroundColor = color;
-            }
-            Console.Write("\n");
-        }
-
-        private List<Pair> Add(List<Pair> firstPairs, List<Pair> secondPairs, bool increaseDepth = true)
-        {
-            var pairs = new List<Pair>();
-            pairs.AddRange(firstPairs);
-            pairs.AddRange(secondPairs);
-            pairs.ForEach(x => x.Depth += 1);
-
-            return pairs;
-        }
-
-        private List<Pair>? Split(List<Pair> pairs)
-        {
-            var pairsToSplit = pairs.Where(x => x.Number >= 10).ToList();
-
-            if (!pairsToSplit.Any())
+            if (pairToSplit == null)
                 return null;
 
-            var pair = pairsToSplit.First();
-            var index = pairs.FindIndex(x => x == pair);
-
-            var newPair1 = new Pair()
+            if (pairToSplit.LeftValue is PairValue leftPair && leftPair.Value >= 10)
             {
-                Depth = pair.Depth + 1,
-                Number = Convert.ToInt32(Math.Floor((float) pair.Number / 2))
-            };
-            
-            var newPair2 = new Pair()
-            {
-                Depth = pair.Depth + 1,
-                Number = Convert.ToInt32(Math.Ceiling((float) pair.Number / 2))
-            };
+                var valueToSplit = (float) leftPair.Value / 2;
+                var leftValue = Convert.ToInt32(Math.Floor(valueToSplit));
+                var rightValue = Convert.ToInt32(Math.Ceiling(valueToSplit));
 
-            var firstPartOfList = pairs.Take(index);
-            var lastPartOfList = pairs.Skip(1).Skip(index);
-            var newList = new List<Pair>();
-            
-            newList.AddRange(firstPartOfList);
-            newList.Add(newPair1);
-            newList.Add(newPair2);
-            newList.AddRange(lastPartOfList);
-
-            return newList;
-        }
-
-        private List<Pair>? Explode(List<Pair> pairs)
-        {
-            Pair? first = null;
-            Pair? second = null;
-            int firstIndex = 0;
-            int secondIndex = 0;
-            var pairFound = false;
-            for (var i = 0; i < pairs.Count - 1; i++)
-            {
-                first = pairs[i];
-                second = pairs[i + 1];
-                firstIndex = i;
-                secondIndex = i + 1;
-
-                if (first.Depth == second.Depth && first.Depth > 4)
+                pairToSplit.LeftValue = new Pair()
                 {
-                    pairFound = true;
-                    break;
-                }
+                    LeftValue = new PairValue(leftValue),
+                    RightValue = new PairValue(rightValue),
+                    Parent = pairToSplit
+                };
+
+                return input;
             }
 
-            if (!pairFound || first == null || second == null)
-                return null;
-            
-            /*var pairToExplode = pairs.Where(x => x.Depth > 4).ToList();
-
-            if (pairToExplode.Count() < 2)
-                return null;
-            
-            var first = pairToExplode.First();
-            var second = pairToExplode.Skip(1).First();
-            var firstIndex = pairs.FindIndex(x => x == first);
-            var secondIndex = pairs.FindIndex(x => x == second);*/
-            
-            // Get number left of first
-            var left = firstIndex - 1;
-            var right = secondIndex + 1;
-
-            if (left >= 0)
+            if (pairToSplit.RightValue is PairValue rightPair && rightPair.Value >= 10)
             {
-                pairs[left].Number += first.Number;
-            }/*
+                var valueToSplit = (float) rightPair.Value / 2;
+                var leftValue = Convert.ToInt32(Math.Floor(valueToSplit));
+                var rightValue = Convert.ToInt32(Math.Ceiling(valueToSplit));
+
+                pairToSplit.RightValue = new Pair()
+                {
+                    LeftValue = new PairValue(leftValue),
+                    RightValue = new PairValue(rightValue),
+                    Parent = pairToSplit
+                };
+
+                return input;
+            }
+
+            return input;
+        }
+
+        private string GetPuzzlePairString(Pair output)
+        {
+            string returnValue = "";
+
+            returnValue += "[";
+            if (output.LeftValue is Pair leftPair)
+            {
+                returnValue += GetPuzzlePairString(leftPair);
+            }
             else
             {
-                // Replace it with a 0
-                pairs[firstIndex] = new Pair()
-                {
-                    Number = 0,
-                    Depth = first.Depth - 1
-                };
-            }*/
+                returnValue += ((PairValue)output.LeftValue).Value.ToString();
+            }
 
-            if (right < pairs.Count())
+            returnValue += ",";
+
+            if (output.RightValue is Pair rightPair)
             {
-                pairs[right].Number += second.Number;
-            }/*
+                returnValue += GetPuzzlePairString(rightPair);
+            }
             else
             {
-                pairs[secondIndex] = new Pair()
-                {
-                    Number = 0,
-                    Depth = second.Depth - 1
-                };
-            }*/
+                returnValue += ((PairValue)output.RightValue).Value.ToString();
+            }
+
+            returnValue += "]";
+
+            return returnValue;
+        }
+
+        private Pair? Explode(Pair input)
+        {
+            var nodeToExplode = GetPairToExplode(input);
+
+            if (nodeToExplode == null)
+                return null;
+
+            var leftValue = (PairValue)nodeToExplode.LeftValue;
+            var rightValue = (PairValue)nodeToExplode.RightValue;
+
+            var toReplaceLeft = FindClosestLeft(nodeToExplode);
+            var toReplaceRight = FindClosestRight(nodeToExplode);
+
+            if (toReplaceLeft != null)
+                toReplaceLeft.Value += leftValue.Value;
+
+            if (toReplaceRight != null)
+                toReplaceRight.Value += rightValue.Value;
             
-            // Place a new 0 
-            if (left > 0)
+            var parent = nodeToExplode.Parent;
+            if (parent == null)
+                return input;
+            
+            if (parent.LeftValue == nodeToExplode)
             {
-                // Replace the left
-                pairs[pairs.FindIndex(x => x == first)].Number = 0;
-                pairs[pairs.FindIndex(x => x == first)].Depth = first.Depth - 1;
-                
-                // Remove the second
-                pairs.Remove(second);
-                return pairs;
+                parent.LeftValue = new PairValue(0);
+            }
+
+            if (parent.RightValue == nodeToExplode)
+            {
+                parent.RightValue = new PairValue(0);
             }
             
-            // Replace the right
-            pairs[pairs.FindIndex(x => x == second)].Number = 0;
-            pairs[pairs.FindIndex(x => x == second)].Depth = first.Depth - 1;
-                
-            // Remove the first
-            pairs.Remove(first);
-            return pairs;
-            
-            /*
-            // Remove the pairs
-
-            var toTest = 0;
-            if (left > 0)
-                if (pairs[left].Depth == first.Depth - 1)
-                {
-                    pairs.Remove(first);
-                    toTest = 1;
-                }
-                else
-                {
-                    first.Depth -= 1;
-                    first.Number = 0;
-                }
-
-            if (right < pairs.Count() + toTest)
-                if (pairs[right - toTest].Depth == second.Depth - 1)
-                    pairs.Remove(second);
-                else
-                {
-                    second.Depth -= 1;
-                    second.Number = 0;
-                }
-
-            return pairs;*/
+            return input;
         }
 
-        public bool IsNumberPair(JToken value)
+        private PairValue? FindClosestLeft(Pair child)
         {
-            return value.Count() == 2 && value.First() is JToken && value.Skip(1).First() is JToken;
-        }
+            var parent = child.Parent;
 
-        public List<Pair> ParsePairs(JArray input, int level = 1)
-        {
-            var result = new List<Pair>();
-            JArray toExplode = null;
-            JArray toSplit = null;
-
-            foreach (var value in input)
+            while (parent is not null)
             {
-                if (value is JArray subArray)
+                if (parent.LeftValue != child)
                 {
-                    result.AddRange(ParsePairs(subArray, level + 1));
-                    continue;
-                }
-
-                if (value is JToken)
-                {
-                    result.Add(new Pair()
+                    var rootToGoRight = parent.LeftValue;
+                    while (rootToGoRight is not PairValue)
                     {
-                        Depth = level,
-                        Number = value.Value<int>()
-                    });
+                        rootToGoRight = ((Pair)rootToGoRight).RightValue;
+                    }
+
+                    return (PairValue)rootToGoRight;
+                }
+
+                child = parent;
+                parent = parent.Parent;
+            }
+
+            return null;
+        }
+        
+        private PairValue? FindClosestRight(Pair child)
+        {
+            var parent = child.Parent;
+
+            while (parent is not null)
+            {
+                if (parent.RightValue != child)
+                {
+                    var rootToGoLeft = parent.RightValue;
+                    while (rootToGoLeft is not PairValue)
+                    {
+                        rootToGoLeft = ((Pair)rootToGoLeft).LeftValue;
+                    }
+
+                    return (PairValue)rootToGoLeft;
+                }
+
+                child = parent;
+                parent = parent.Parent;
+            }
+
+            return null;
+        }
+        
+        private Pair? GetPairToSplit(Pair startNode)
+        {
+            if (startNode.LeftValue is PairValue leftValue && leftValue.Value >= 10)
+                return startNode;
+            
+            if (startNode.LeftValue is Pair leftPair)
+            {
+                var leftToSplit = GetPairToSplit(leftPair);
+                if (leftToSplit != null)
+                    return leftToSplit; 
+            }
+
+            if (startNode.RightValue is PairValue rightValue && rightValue.Value >= 10)
+                return startNode;
+            
+            if (startNode.RightValue is Pair rightPair)
+            {
+                var rightToSplit = GetPairToSplit(rightPair);
+                if (rightToSplit != null)
+                    return rightToSplit;
+            }
+
+            return null;
+        }
+
+        private Pair? GetPairToExplode(Pair startNode, int? currentDepth = null)
+        {
+            if (currentDepth == null)
+                currentDepth = 1;
+            
+            if (startNode.IsRegularPair && currentDepth > 4)
+                return startNode;
+
+            if (!startNode.IsRegularPair)
+            {
+                if (startNode.LeftValue is Pair leftPair)
+                {
+                    var leftExplode = GetPairToExplode(leftPair, currentDepth + 1);
+                    if (leftExplode != null)
+                        return leftExplode;
+                }
+                
+                if (startNode.RightValue is Pair rightPair)
+                {
+                    var rightExplode = GetPairToExplode(rightPair, currentDepth + 1);
+                    if (rightExplode != null)
+                        return rightExplode;
                 }
             }
 
-            return result;
+            return null;
+        }
+
+        public Pair ParsePairs(JArray input, Pair? parent = null)
+        {
+            var newPair = new Pair();
+
+            if (input[0] is JArray child1Array)
+                newPair.LeftValue = ParsePairs(child1Array, newPair);
+            else
+                newPair.LeftValue = new PairValue(input[0].Value<int>());
+            
+            if (input[1] is JArray child2Array)
+                newPair.RightValue = ParsePairs(child2Array, newPair);
+            else
+                newPair.RightValue = new PairValue(input[1].Value<int>());
+
+            newPair.Parent = parent;
+            
+            return newPair;
         }
     }
 }
