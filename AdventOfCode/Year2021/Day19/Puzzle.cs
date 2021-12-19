@@ -8,6 +8,7 @@ namespace AdventOfCode.Year2021.Day19
     public class Puzzle : PuzzleBase
     {
         private List<Scanner> scanners = new List<Scanner>();
+        
         public Puzzle()
         {
             this.Init(19, false);
