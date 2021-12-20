@@ -19,6 +19,29 @@
             return newArray;
         }
         
+        public static TType[,] PadArray<TType>(this TType[,] inputArray, TType padValue, int paddingSize)
+        {
+            paddingSize = paddingSize * 2;
+            var newArray = new TType[inputArray.GetLength(0) + paddingSize, inputArray.GetLength(1) + paddingSize];
+
+            for (var row = 0; row < inputArray.GetLength(0) + paddingSize; row++)
+            for (var col = 0; col < inputArray.GetLength(1) + paddingSize; col++)
+            {
+                if (row < (paddingSize / 2) || 
+                    (row - (paddingSize / 2)) > inputArray.GetLength(0) - 1 || 
+                    col < (paddingSize / 2) || 
+                    (col - (paddingSize / 2)) > inputArray.GetLength(1) - 1)
+                {
+                    newArray[row, col] = padValue;
+                    continue;
+                }
+
+                newArray[row, col] = inputArray[row - (paddingSize / 2), col - (paddingSize / 2)];
+            }
+            
+            return newArray;
+        }
+        
         public static TType? GetFromArray<TType>(this TType[,] input, int row, int col)
         where TType : class
         {

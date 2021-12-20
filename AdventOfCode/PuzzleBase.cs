@@ -78,6 +78,23 @@ namespace AdventOfCode
             Console.ForegroundColor = color;
             Console.WriteLine("---------------------------------");
         }
+        
+        public void TestNotExpected(string actual, List<string> notExpected)
+        {
+            var color = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write("ACTUAL  : ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            if (notExpected.Contains(actual))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+            Console.Write(actual);
+            Console.Write("\n");
+            Console.ForegroundColor = color;
+            Console.WriteLine("---------------------------------");
+        }
 
         public List<string[]> LinesToArray(IEnumerable<string> lines, string separator)
         {
