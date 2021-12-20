@@ -99,17 +99,6 @@ namespace AdventOfCode.Year2021.Day20
             return image;
         }
 
-        private string GetFromArray(string[,] input, int row, int col, string defaultValue)
-        {
-            if (row < 0 || row > input.GetLength(0) - 1)
-                return defaultValue;
-
-            if (col < 0 || col > input.GetLength(1) - 1)
-                return defaultValue;
-
-            return input[row, col];
-        }
-
         private string GetPixel(string[,] outputImage, int row, int col)
         {
             var pixelString =
