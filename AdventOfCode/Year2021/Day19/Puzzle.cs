@@ -53,7 +53,9 @@ namespace AdventOfCode.Year2021.Day19
             var firstScanner = scanners[0];
             firstScanner.Calibrated = true;
             
-            Console.WriteLine($"Calibrating {scanners.Count} scanners...");
+            Console.WriteLine($"Calibrating {scanners.Count - 1} scanners...");
+            
+            Console.Write(scanners.Count(x => !x.Calibrated)+"...");
             
             // Calibrate all scanners to 0 if possible
             foreach (var scanner in scanners)
@@ -64,9 +66,7 @@ namespace AdventOfCode.Year2021.Day19
                 CalibrateScanner(firstScanner, scanner);
 
                 if (scanner.Calibrated)
-                {
                     Console.Write(scanners.Count(x => !x.Calibrated)+"...");
-                }
             }
             
             // Calibrate all uncalibrated scanners to calibrated scanners?
@@ -231,9 +231,20 @@ namespace AdventOfCode.Year2021.Day19
                     var negativeDiff = input - check;
 
                     foreach (var inputTest in inputList)
-                        foreach (var test in checkList)
-                            if (inputTest - test == negativeDiff)
-                                matches += 1;
+                    {
+                        foreach (var checkTest in checkList)
+                        {
+                            if (inputTest - checkTest != negativeDiff) continue;
+                            
+                            matches += 1;
+
+                            if (matches > 11)
+                                break;
+                        }
+                        
+                        if (matches > 11)
+                            break;
+                    }
 
                     if (matches > 11)
                         return (matches, negativeDiff, false);
@@ -242,10 +253,21 @@ namespace AdventOfCode.Year2021.Day19
                     var positiveDiff = input + check;
 
                     foreach (var inputTest in inputList)
-                        foreach (var test in checkList)
-                            if (inputTest + test == positiveDiff)
-                                matches += 1;
-
+                    {
+                        foreach (var checkTest in checkList)
+                        {
+                            if (inputTest + checkTest != positiveDiff) continue;
+                            
+                            matches += 1;
+                                
+                            if (matches > 11)
+                                break;
+                        }
+                        
+                        if (matches > 11)
+                            break;
+                    }
+                    
                     if (matches > 11)
                         return (matches, positiveDiff, true);
                 }
