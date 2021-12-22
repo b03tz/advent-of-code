@@ -13,6 +13,7 @@ namespace AdventOfCode
         public int Day = 0;
         public bool IsTesting = false;
         public Dictionary<string, long> Timers = new Dictionary<string, long>();
+        public Dictionary<string, long> IterationCounters = new Dictionary<string, long>();
         private Dictionary<string, Stopwatch> Stopwatches = new Dictionary<string, Stopwatch>();
 
         public void Init(int day, bool isTesting)
@@ -32,6 +33,16 @@ namespace AdventOfCode
             Stopwatches[key].Reset();
             Stopwatches[key].Start();
         }
+        
+        public void AddIteration(string key)
+        {
+            if (!IterationCounters.ContainsKey(key))
+            {
+                IterationCounters[key] = 0;
+            }
+
+            IterationCounters[key]++;
+        }
 
         public void EndTimer(string key)
         {
@@ -44,7 +55,15 @@ namespace AdventOfCode
         {
             foreach (var pair in Timers)
             {
-                Console.WriteLine($"{pair.Key}: {pair.Value}");
+                Console.WriteLine($"{pair.Key}: {pair.Value}ms");
+            }
+        }
+        
+        public void PrintIterations()
+        {
+            foreach (var pair in IterationCounters)
+            {
+                Console.WriteLine($"{pair.Key}: {pair.Value} iterations");
             }
         }
         

@@ -61,7 +61,6 @@ namespace AdventOfCode.Year2021.Day21
         {
             var result = CalculatePlayerWins(3, 7, 0, 0);
             Console.WriteLine($"Part 2 - Player 1 wins: {result.p1Wins}, Player 2 wins: {result.p2Wins}");
-            
             // After some calculating...it seems you can better be player 1...
             // since he wins 94% of the time in ANY given start position for either player or player 2 \o/
         }
