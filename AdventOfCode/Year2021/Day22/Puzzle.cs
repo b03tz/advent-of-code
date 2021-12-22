@@ -14,7 +14,7 @@ namespace AdventOfCode.Year2021.Day22
 
         public Puzzle()
         {
-            this.Init(22, true);
+            this.Init(22, false);
             var lines = this.GetPuzzleLines();
 
             foreach (var line in lines)
@@ -33,14 +33,14 @@ namespace AdventOfCode.Year2021.Day22
                 });
             }
 
-            //Part1();
+            Part1();
             Part2();
         }
 
         private void Part1()
         {
             HashSet<(int x, int y, int z)> pixels = new HashSet<(int x, int y, int z)>();
-            
+
             foreach (var instruction in Instructions)
             {
                 if (
@@ -51,256 +51,114 @@ namespace AdventOfCode.Year2021.Day22
                 {
                     continue;
                 }
-                
-                Console.WriteLine(instruction.ToString());
-                
+
                 switch (instruction.Action)
                 {
                     case Action.On:
                         for (var x = instruction.RangeX.start; x <= instruction.RangeX.end; x++)
-                            for (var y = instruction.RangeY.start; y <= instruction.RangeY.end; y++)
-                                for (var z = instruction.RangeZ.start; z <= instruction.RangeZ.end; z++)
-                                    pixels.Add((x, y, z));
+                        for (var y = instruction.RangeY.start; y <= instruction.RangeY.end; y++)
+                        for (var z = instruction.RangeZ.start; z <= instruction.RangeZ.end; z++)
+                            pixels.Add((x, y, z));
                         break;
                     case Action.Off:
                         for (var x = instruction.RangeX.start; x <= instruction.RangeX.end; x++)
-                            for (var y = instruction.RangeY.start; y <= instruction.RangeY.end; y++)
-                                for (var z = instruction.RangeZ.start; z <= instruction.RangeZ.end; z++)
-                                    pixels.Remove((x, y, z));
+                        for (var y = instruction.RangeY.start; y <= instruction.RangeY.end; y++)
+                        for (var z = instruction.RangeZ.start; z <= instruction.RangeZ.end; z++)
+                            pixels.Remove((x, y, z));
                         break;
                 }
             }
-            
-            Console.WriteLine(pixels.LongCount());
+
+            Console.WriteLine($"Part 1 result - {pixels.LongCount()}");
         }
-        
+
         private void Part2()
         {
-            var groupedInstructions = new HashSet<HashSet<Instruction>>();
-            var maxSize = 1000;
-
-            Console.WriteLine("Splitting");
-            Instructions = SplitInstructions(Instructions, maxSize);
-            Console.WriteLine("Done splitting");
-            while (Instructions.Any())
+            var input = new HashSet<Cuboid>();
+            foreach (var instruction in Instructions)
             {
-                var first = Instructions.First();
-                var instructionSet = new HashSet<Instruction>()
+                input.Add(new Cuboid
                 {
-                    first
-                };
-                var theRest = new HashSet<Instruction>(Instructions.Skip(1));
-                
-                // Find overlapping cubes
-                foreach (var cube in theRest)
-                {
-                    if (cube.OverlapsWith(first))
-                        instructionSet.Add(cube);
-                }
-                
-                groupedInstructions.Add(instructionSet);
-                theRest.RemoveWhere(x => instructionSet.Contains(x));
-                Instructions = theRest;
-                Console.WriteLine($"Adding {instructionSet.Count} instructions, {Instructions.Count} remaining (total groups: {groupedInstructions.Count})");
-
-                // Try 100 instruction sets
-                if (groupedInstructions.Count > 1)
-                {
-                    break;
-                }
+                    X = (instruction.RangeX.start, instruction.RangeX.end),
+                    Y = (instruction.RangeY.start, instruction.RangeY.end),
+                    Z = (instruction.RangeZ.start, instruction.RangeZ.end),
+                    IsOn = instruction.Action == Action.On 
+                });
             }
 
-            long totalOnCount = 0;
-            foreach(var grouped in groupedInstructions)
+            var result = new HashSet<Cuboid>();
+            foreach (var cube in input)
             {
-                var subUniverse = new bool[1000, 1000, 1000];
+                var newCubes = new HashSet<Cuboid>();
                 
-               // HashSet<(int x, int y, int z)> pixels = new HashSet<(int x, int y, int z)>();
-               
-                foreach (var instruction in grouped)
+                // Store cubes that are on always
+                if (cube.IsOn)
+                    newCubes.Add(cube);
+
+                // Compare to other cubes in current result set
+                foreach (var existingCube in result)
                 {
-                    var minX = Math.Abs(instruction.RangeX.start);
-                    var minY = Math.Abs(instruction.RangeY.start);
-                    var minZ = Math.Abs(instruction.RangeZ.start);
+                    // Create the intersection if it applies...
+                    // The intersection is in opposite state of the intersected cube...
+                    // This creates unnecessary cubes...but it's better than bruteforcing xD
+                    var newCuboid = cube.CreateNewIfIntersect(existingCube, !existingCube.IsOn);
+                    if (newCuboid == null)
+                        continue;
                     
-                    Console.WriteLine(instruction.ToString());
-                
-                    for (var x = 0; x < 1000; x++)
-                    for (var y = 0; y < 1000; y++)
-                    for (var z = 0; z < 1000; z++)
-                    {
-                        var startX = Math.Abs(instruction.RangeX.start) - minX + x;
-                        var startY = Math.Abs(instruction.RangeY.start) - minY + y;
-                        var startZ = Math.Abs(instruction.RangeZ.start) - minZ + z;
-                        subUniverse[startX, startY, startZ] = instruction.Action == Action.On;
-                    }
+                    newCubes.Add(newCuboid);
                 }
 
-                for(var x = 0; x < subUniverse.GetLength(0); x++)
-                {
-                    for(var y = 0; y < subUniverse.GetLength(1); y++)
-                    {
-                        for(var z = 0; z < subUniverse.GetLength(2); z++)
-                        {
-                            if (subUniverse[x, y, z] == true)
-                                totalOnCount++;
-                        }
-                    }
-                }
-            }
-            Console.WriteLine(totalOnCount);
-        }
-
-        private HashSet<Instruction> SplitInstructions(HashSet<Instruction> instructions, int maxSize = 50)
-        {
-            var newInstructions = new HashSet<Instruction>();
-
-            // Split instructions in X axis
-            Console.WriteLine($"Split X {instructions.Count}");
-            foreach (var instruction in instructions)
-            {
-                var xSize = instruction.RangeX.end - instruction.RangeX.start;
-
-                if (xSize > maxSize)
-                {
-                    var i = instruction.RangeX.start;
-                    for (; i < instruction.RangeX.end; i += maxSize)
-                    {
-                        var end = i + maxSize;
-                        if (end > instruction.RangeX.end)
-                            end = instruction.RangeX.end;
-                        
-                        var newInstruction = new Instruction()
-                        {
-                            RangeX = (i, end),
-                            RangeY = instruction.RangeY,
-                            RangeZ = instruction.RangeZ
-                        };
-                        
-                        newInstructions.Add(newInstruction);
-                    }
-
-                    if (i < instruction.RangeX.end)
-                    {
-                        newInstructions.Add(new Instruction()
-                        {
-                            RangeX = (i, instruction.RangeX.end),
-                            RangeY = instruction.RangeY,
-                            RangeZ = instruction.RangeZ
-                        });
-                    }
-                }
+                // Add the new cubes back into the result
+                foreach (var c in newCubes)
+                    result.Add(c);
             }
             
-            Console.WriteLine($"Split Y {newInstructions.Count}");
-            // Split instructions in Y axis
-            var splitYInstructions = new HashSet<Instruction>();
-            foreach (var instruction in newInstructions)
-            {
-                var ySize = instruction.RangeY.end - instruction.RangeY.start;
+            Console.WriteLine($"Part 2 result - {result.Aggregate(0L, (totalVolume, c) => totalVolume + CalculateVolume(c))}");
+        }
 
-                if (ySize > maxSize)
-                {
-                    var i = instruction.RangeY.start;
-                    for (; i < instruction.RangeY.end; i += maxSize)
-                    {
-                        var end = i + maxSize;
-                        if (end > instruction.RangeY.end)
-                            end = instruction.RangeY.end;
-                        
-                        var newInstruction = new Instruction()
-                        {
-                            RangeX = instruction.RangeX,
-                            RangeY = (i, end),
-                            RangeZ = instruction.RangeZ
-                        };
-                        
-                        splitYInstructions.Add(newInstruction);
-                    }
-
-                    if (i < instruction.RangeY.end)
-                    {
-                        splitYInstructions.Add(new Instruction()
-                        {
-                            RangeX = instruction.RangeX,
-                            RangeY = (i, instruction.RangeY.end),
-                            RangeZ = instruction.RangeZ
-                        });
-                    }
-                }
-            }
-
-            newInstructions = splitYInstructions;
+        public long CalculateVolume(Cuboid cube)
+        {
+            if (!cube.IsOn)
+                return -(cube.X.end - cube.X.start + 1L) * (cube.Y.end - cube.Y.start + 1L) * (cube.Z.end - cube.Z.start + 1L);   
             
-            Console.WriteLine($"Split Z {newInstructions.Count}");
-            var splitZInstructions = new HashSet<Instruction>();
-            foreach (var instruction in newInstructions)
-            {
-                var zSize = instruction.RangeZ.end - instruction.RangeZ.start;
-
-                if (zSize > maxSize)
-                {
-                    var i = instruction.RangeZ.start;
-                    for (; i < instruction.RangeZ.end; i += maxSize)
-                    {
-                        var end = i + maxSize;
-                        if (end > instruction.RangeZ.end)
-                            end = instruction.RangeZ.end;
-                        
-                        var newInstruction = new Instruction()
-                        {
-                            RangeX = instruction.RangeX,
-                            RangeY = instruction.RangeY,
-                            RangeZ = (i, end)
-                        };
-                        
-                        splitZInstructions.Add(newInstruction);
-                    }
-
-                    if (i < instruction.RangeZ.end)
-                    {
-                        splitZInstructions.Add(new Instruction()
-                        {
-                            RangeX = instruction.RangeX,
-                            RangeY = instruction.RangeY,
-                            RangeZ = (i, instruction.RangeZ.end)
-                        });
-                    }
-                }
-            }
-
-            return splitZInstructions;
+            return (cube.X.end - cube.X.start + 1L) * (cube.Y.end - cube.Y.start + 1L) * (cube.Z.end - cube.Z.start + 1L);
         }
     }
-
-    public struct Pixel
-    {
-        public Pixel(int x, int y, int z)
-        {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
-        }
-        
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Z { get; set; }
-
-        public override string ToString()
-        {
-            return $"{X},{Y},{Z}";
-        }
-    }
+    
 
     public class Cuboid
     {
         public (int start, int end) X { get; set; }
         public (int start, int end) Y { get; set; }
         public (int start, int end) Z { get; set; }
+        
+        public bool IsOn { get; set; }
 
-        public long Calculate()
+        public Cuboid? CreateNewIfIntersect(Cuboid b, bool isOn)
         {
-            return Math.Abs(X.end - X.start) * Math.Abs(Y.end - Y.start) * Math.Abs(Z.end - Z.start);
+            if (!OverlapsWith(b))
+                return null;
+
+            return new Cuboid
+            {
+                X = (Math.Max(X.start, b.X.start), Math.Min(X.end, b.X.end)),
+                Y = (Math.Max(Y.start, b.Y.start), Math.Min(Y.end, b.Y.end)),
+                Z = (Math.Max(Z.start, b.Z.start), Math.Min(Z.end, b.Z.end)),
+                IsOn = isOn
+            };
+        }
+        
+        public bool OverlapsWith(Cuboid b)
+        {
+            if (
+                X.start > b.X.end || X.end < b.X.start ||
+                Y.start > b.Y.end || Y.end < b.Y.start ||
+                Z.start > b.Z.end || Z.end < b.Z.start)
+            {
+                return false;
+            }
+            
+            return true;
         }
     }
 
@@ -325,30 +183,6 @@ namespace AdventOfCode.Year2021.Day22
 
     public static class Extensions
     {
-        public static bool OverlapsWith(this Instruction a, Instruction b)
-        {
-            if (
-                // if b = inside a
-                (b.RangeX.start > a.RangeX.start && b.RangeX.start < a.RangeX.end) ||
-                (b.RangeX.end > a.RangeX.start && b.RangeX.end < a.RangeX.end) ||
-                (b.RangeY.start > a.RangeY.start && b.RangeY.start < a.RangeY.end) ||
-                (b.RangeY.end > a.RangeY.start && b.RangeY.end < a.RangeY.end) ||
-                (b.RangeZ.start > a.RangeZ.start && b.RangeZ.start < a.RangeZ.end) ||
-                (b.RangeZ.end > a.RangeZ.start && b.RangeZ.end < a.RangeY.end) ||
-                
-                // if a  inside b
-                (a.RangeX.start > b.RangeX.start && a.RangeX.start < b.RangeX.end) ||
-                (a.RangeX.end > b.RangeX.start && a.RangeX.end < b.RangeX.end) ||
-                (a.RangeY.start > b.RangeY.start && a.RangeY.start < b.RangeY.end) ||
-                (a.RangeY.end > b.RangeY.start && a.RangeY.end < b.RangeY.end) ||
-                (a.RangeZ.start > b.RangeZ.start && a.RangeZ.start < b.RangeZ.end) ||
-                (a.RangeZ.end > b.RangeZ.start && a.RangeZ.end < b.RangeY.end)
-            )
-            {
-                return true;
-            }
-            
-            return false;
-        }
+
     }
 }
