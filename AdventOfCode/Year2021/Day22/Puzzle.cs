@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Text.RegularExpressions;
 using AdventOfCode.Helpers;
 
@@ -8,9 +9,9 @@ namespace AdventOfCode.Year2021.Day22
 {
     public class Puzzle : PuzzleBase
     {
-        private List<Instruction> Instructions = new List<Instruction>();
+        private HashSet<Instruction> Instructions = new HashSet<Instruction>();
         private List<Cuboid> Cuboids = new List<Cuboid>();
-        
+
         public Puzzle()
         {
             this.Init(22, true);
@@ -18,7 +19,10 @@ namespace AdventOfCode.Year2021.Day22
 
             foreach (var line in lines)
             {
-                var matches = new Regex("^(on|off) x=([\\-0-9]{1,})..([\\-0-9]{1,}),y=([\\-0-9]{1,})..([\\-0-9]{1,}),z=([\\-0-9]{1,})..([\\-0-9]{1,})$").Match(line);
+                var matches =
+                    new Regex(
+                            "^(on|off) x=([\\-0-9]{1,})..([\\-0-9]{1,}),y=([\\-0-9]{1,})..([\\-0-9]{1,}),z=([\\-0-9]{1,})..([\\-0-9]{1,})$")
+                        .Match(line);
 
                 Instructions.Add(new Instruction
                 {
@@ -29,173 +33,263 @@ namespace AdventOfCode.Year2021.Day22
                 });
             }
 
-            Part1();
+            //Part1();
+            Part2();
         }
 
         private void Part1()
         {
-            var minY = Instructions.Select(x => x.RangeY.start).Min();
-            var maxY = Instructions.Select(x => x.RangeY.end).Max();
-            var minX = Instructions.Select(x => x.RangeX.start).Min();
-            var maxX = Instructions.Select(x => x.RangeX.end).Max();
-            var minZ = Instructions.Select(x => x.RangeZ.start).Min();
-            var maxZ = Instructions.Select(x => x.RangeZ.end).Max();
+            HashSet<(int x, int y, int z)> pixels = new HashSet<(int x, int y, int z)>();
             
-            var xSize = maxX - minX;
-            var ySize = maxY - minY;
-            var zSize = maxZ - minZ;
-
-            var xArray = new Pixel[xSize];
-            var yArray = new Pixel[ySize];
-            var zArray = new Pixel[zSize];
-
-            var index = 0;
-            for (var i = minX; i < maxX; i++)
-                xArray[index++] = new Pixel(i);
-            
-            index = 0;
-            for (var i = minY; i < maxY; i++)
-                yArray[index++] = new Pixel(i);
-            
-            index = 0;
-            for (var i = minZ; i < maxZ; i++)
-                zArray[index++] = new Pixel(i);
-
             foreach (var instruction in Instructions)
             {
+                if (
+                    instruction.RangeX.start < -50 || instruction.RangeX.end > 50 ||
+                    instruction.RangeY.start < -50 || instruction.RangeY.end > 50 ||
+                    instruction.RangeZ.start < -50 || instruction.RangeZ.end > 50
+                )
+                {
+                    continue;
+                }
+                
+                Console.WriteLine(instruction.ToString());
+                
                 switch (instruction.Action)
                 {
                     case Action.On:
-                        xArray.Where(x => x.Index >= instruction.RangeX.start && x.Index <= instruction.RangeX.end).ToList().ForEach(x => x.State = true);
-                        yArray.Where(x => x.Index >= instruction.RangeX.start && x.Index <= instruction.RangeX.end).ToList().ForEach(x => x.State = true);
-                        zArray.Where(x => x.Index >= instruction.RangeX.start && x.Index <= instruction.RangeX.end).ToList().ForEach(x => x.State = true);
+                        for (var x = instruction.RangeX.start; x <= instruction.RangeX.end; x++)
+                            for (var y = instruction.RangeY.start; y <= instruction.RangeY.end; y++)
+                                for (var z = instruction.RangeZ.start; z <= instruction.RangeZ.end; z++)
+                                    pixels.Add((x, y, z));
                         break;
                     case Action.Off:
-                        xArray.Where(x => x.Index >= instruction.RangeX.start && x.Index <= instruction.RangeX.end).ToList().ForEach(x => x.State = false);
-                        yArray.Where(x => x.Index >= instruction.RangeX.start && x.Index <= instruction.RangeX.end).ToList().ForEach(x => x.State = false);
-                        zArray.Where(x => x.Index >= instruction.RangeX.start && x.Index <= instruction.RangeX.end).ToList().ForEach(x => x.State = false);
+                        for (var x = instruction.RangeX.start; x <= instruction.RangeX.end; x++)
+                            for (var y = instruction.RangeY.start; y <= instruction.RangeY.end; y++)
+                                for (var z = instruction.RangeZ.start; z <= instruction.RangeZ.end; z++)
+                                    pixels.Remove((x, y, z));
                         break;
                 }
             }
-        }
-
-        private class Pixel
-        {
-            public Pixel(int index)
-            {
-                Index = index;
-            }
-            public int Index { get; set; }
-            public bool State { get; set; }
-        }
-
-        private void HandleInstruction(List<Range> onList, int start, int end, Action action)
-        {
-            // Check if there's an item already containing the supplied item
-            var contained = onList.FirstOrDefault(range =>
-                range.Start <= start && range.End >= end
-            );
-
-            if (contained != null)
-            {
-                // They are already on
-                if (action == Action.On)
-                    return;
-
-                // The need to be split
-                if (action == Action.Off)
-                {
-                    var newRange1 = new Range(contained.Start, start);
-                    var newRange2 = new Range(end, contained.End);
-
-                    onList.Remove(contained);
-                    onList.Add(newRange1);
-                    onList.Add(newRange2);
-
-                    return;
-                }
-            }
             
-            // Check if the item already contains a list item
-            var containedExisting = onList.Where(range =>
-                range.Start >= start && range.End <= end
-            ).ToList();
+            Console.WriteLine(pixels.LongCount());
+        }
+        
+        private void Part2()
+        {
+            var groupedInstructions = new HashSet<HashSet<Instruction>>();
+            var maxSize = 1000;
 
-            if (containedExisting.Any())
+            Console.WriteLine("Splitting");
+            Instructions = SplitInstructions(Instructions, maxSize);
+            Console.WriteLine("Done splitting");
+            while (Instructions.Any())
             {
-                // They are already on
-                if (action == Action.On)
+                var first = Instructions.First();
+                var instructionSet = new HashSet<Instruction>()
                 {
-                    // Remove all
-                    onList.RemoveAll(x => containedExisting.Contains(x));
-                    
-                    // Add this range
-                    onList.Add(new Range(start, end));
-
-                    return;
-                }
-
+                    first
+                };
+                var theRest = new HashSet<Instruction>(Instructions.Skip(1));
                 
-                if (action == Action.Off)
+                // Find overlapping cubes
+                foreach (var cube in theRest)
                 {
-                    // Remove all that fall in this range
-                    onList.RemoveAll(x => containedExisting.Contains(x));
-                    return;
+                    if (cube.OverlapsWith(first))
+                        instructionSet.Add(cube);
+                }
+                
+                groupedInstructions.Add(instructionSet);
+                theRest.RemoveWhere(x => instructionSet.Contains(x));
+                Instructions = theRest;
+                Console.WriteLine($"Adding {instructionSet.Count} instructions, {Instructions.Count} remaining (total groups: {groupedInstructions.Count})");
+
+                // Try 100 instruction sets
+                if (groupedInstructions.Count > 1)
+                {
+                    break;
+                }
+            }
+
+            long totalOnCount = 0;
+            foreach(var grouped in groupedInstructions)
+            {
+                var subUniverse = new bool[1000, 1000, 1000];
+                
+               // HashSet<(int x, int y, int z)> pixels = new HashSet<(int x, int y, int z)>();
+               
+                foreach (var instruction in grouped)
+                {
+                    var minX = Math.Abs(instruction.RangeX.start);
+                    var minY = Math.Abs(instruction.RangeY.start);
+                    var minZ = Math.Abs(instruction.RangeZ.start);
+                    
+                    Console.WriteLine(instruction.ToString());
+                
+                    for (var x = 0; x < 1000; x++)
+                    for (var y = 0; y < 1000; y++)
+                    for (var z = 0; z < 1000; z++)
+                    {
+                        var startX = Math.Abs(instruction.RangeX.start) - minX + x;
+                        var startY = Math.Abs(instruction.RangeY.start) - minY + y;
+                        var startZ = Math.Abs(instruction.RangeZ.start) - minZ + z;
+                        subUniverse[startX, startY, startZ] = instruction.Action == Action.On;
+                    }
+                }
+
+                for(var x = 0; x < subUniverse.GetLength(0); x++)
+                {
+                    for(var y = 0; y < subUniverse.GetLength(1); y++)
+                    {
+                        for(var z = 0; z < subUniverse.GetLength(2); z++)
+                        {
+                            if (subUniverse[x, y, z] == true)
+                                totalOnCount++;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine(totalOnCount);
+        }
+
+        private HashSet<Instruction> SplitInstructions(HashSet<Instruction> instructions, int maxSize = 50)
+        {
+            var newInstructions = new HashSet<Instruction>();
+
+            // Split instructions in X axis
+            Console.WriteLine($"Split X {instructions.Count}");
+            foreach (var instruction in instructions)
+            {
+                var xSize = instruction.RangeX.end - instruction.RangeX.start;
+
+                if (xSize > maxSize)
+                {
+                    var i = instruction.RangeX.start;
+                    for (; i < instruction.RangeX.end; i += maxSize)
+                    {
+                        var end = i + maxSize;
+                        if (end > instruction.RangeX.end)
+                            end = instruction.RangeX.end;
+                        
+                        var newInstruction = new Instruction()
+                        {
+                            RangeX = (i, end),
+                            RangeY = instruction.RangeY,
+                            RangeZ = instruction.RangeZ
+                        };
+                        
+                        newInstructions.Add(newInstruction);
+                    }
+
+                    if (i < instruction.RangeX.end)
+                    {
+                        newInstructions.Add(new Instruction()
+                        {
+                            RangeX = (i, instruction.RangeX.end),
+                            RangeY = instruction.RangeY,
+                            RangeZ = instruction.RangeZ
+                        });
+                    }
                 }
             }
             
-            // Check if we can join
-            var joinStart = onList.FirstOrDefault(range =>
-                range.Start <= start && range.End >= start
-            );
-            var joinEnd = onList.FirstOrDefault(range =>
-                range.Start <= end && range.End >= end
-            );
-            if (joinStart != null && joinEnd != null)
+            Console.WriteLine($"Split Y {newInstructions.Count}");
+            // Split instructions in Y axis
+            var splitYInstructions = new HashSet<Instruction>();
+            foreach (var instruction in newInstructions)
             {
-                // Join the ranges together
-                joinStart.End = end;
-                onList.Remove(joinStart);
+                var ySize = instruction.RangeY.end - instruction.RangeY.start;
 
-                return;
+                if (ySize > maxSize)
+                {
+                    var i = instruction.RangeY.start;
+                    for (; i < instruction.RangeY.end; i += maxSize)
+                    {
+                        var end = i + maxSize;
+                        if (end > instruction.RangeY.end)
+                            end = instruction.RangeY.end;
+                        
+                        var newInstruction = new Instruction()
+                        {
+                            RangeX = instruction.RangeX,
+                            RangeY = (i, end),
+                            RangeZ = instruction.RangeZ
+                        };
+                        
+                        splitYInstructions.Add(newInstruction);
+                    }
+
+                    if (i < instruction.RangeY.end)
+                    {
+                        splitYInstructions.Add(new Instruction()
+                        {
+                            RangeX = instruction.RangeX,
+                            RangeY = (i, instruction.RangeY.end),
+                            RangeZ = instruction.RangeZ
+                        });
+                    }
+                }
             }
-            
-            // Check if we can extend left
-            var extendLeft = onList.FirstOrDefault(range =>
-                range.Start >= start && range.Start <= end);
 
-            if (extendLeft != null)
+            newInstructions = splitYInstructions;
+            
+            Console.WriteLine($"Split Z {newInstructions.Count}");
+            var splitZInstructions = new HashSet<Instruction>();
+            foreach (var instruction in newInstructions)
             {
-                extendLeft.Start = start;
-                return;
-            }
-            
-            // Check if we can extend right
-            var extendRight = onList.FirstOrDefault(range =>
-                range.Start <= start && range.End >= start);
+                var zSize = instruction.RangeZ.end - instruction.RangeZ.start;
 
-            if (extendRight != null)
-            {
-                extendRight.End = end;
-                return;
+                if (zSize > maxSize)
+                {
+                    var i = instruction.RangeZ.start;
+                    for (; i < instruction.RangeZ.end; i += maxSize)
+                    {
+                        var end = i + maxSize;
+                        if (end > instruction.RangeZ.end)
+                            end = instruction.RangeZ.end;
+                        
+                        var newInstruction = new Instruction()
+                        {
+                            RangeX = instruction.RangeX,
+                            RangeY = instruction.RangeY,
+                            RangeZ = (i, end)
+                        };
+                        
+                        splitZInstructions.Add(newInstruction);
+                    }
+
+                    if (i < instruction.RangeZ.end)
+                    {
+                        splitZInstructions.Add(new Instruction()
+                        {
+                            RangeX = instruction.RangeX,
+                            RangeY = instruction.RangeY,
+                            RangeZ = (i, instruction.RangeZ.end)
+                        });
+                    }
+                }
             }
-            
-            // Just add it
-            onList.Add(new Range(start, end));
+
+            return splitZInstructions;
         }
     }
 
-    
-    
-    public class Range
+    public struct Pixel
     {
-        public Range(int start, int end)
+        public Pixel(int x, int y, int z)
         {
-            Start = start;
-            End = end;
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
         }
-        public int Start { get; set; }
-        public int End { get; set; }
+        
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+
+        public override string ToString()
+        {
+            return $"{X},{Y},{Z}";
+        }
     }
 
     public class Cuboid
@@ -216,10 +310,45 @@ namespace AdventOfCode.Year2021.Day22
         public (int start, int end) RangeX { get; set; }
         public (int start, int end) RangeY { get; set; }
         public (int start, int end) RangeZ { get; set; }
+
+        public override string ToString()
+        {
+            return $"x={RangeX.start}..{RangeX.end} y={RangeY.start}..{RangeY.end} z={RangeZ.start}..{RangeZ.end}";
+        }
     }
-    
-    public enum Action {
+
+    public enum Action
+    {
         On,
         Off
+    }
+
+    public static class Extensions
+    {
+        public static bool OverlapsWith(this Instruction a, Instruction b)
+        {
+            if (
+                // if b = inside a
+                (b.RangeX.start > a.RangeX.start && b.RangeX.start < a.RangeX.end) ||
+                (b.RangeX.end > a.RangeX.start && b.RangeX.end < a.RangeX.end) ||
+                (b.RangeY.start > a.RangeY.start && b.RangeY.start < a.RangeY.end) ||
+                (b.RangeY.end > a.RangeY.start && b.RangeY.end < a.RangeY.end) ||
+                (b.RangeZ.start > a.RangeZ.start && b.RangeZ.start < a.RangeZ.end) ||
+                (b.RangeZ.end > a.RangeZ.start && b.RangeZ.end < a.RangeY.end) ||
+                
+                // if a  inside b
+                (a.RangeX.start > b.RangeX.start && a.RangeX.start < b.RangeX.end) ||
+                (a.RangeX.end > b.RangeX.start && a.RangeX.end < b.RangeX.end) ||
+                (a.RangeY.start > b.RangeY.start && a.RangeY.start < b.RangeY.end) ||
+                (a.RangeY.end > b.RangeY.start && a.RangeY.end < b.RangeY.end) ||
+                (a.RangeZ.start > b.RangeZ.start && a.RangeZ.start < b.RangeZ.end) ||
+                (a.RangeZ.end > b.RangeZ.start && a.RangeZ.end < b.RangeY.end)
+            )
+            {
+                return true;
+            }
+            
+            return false;
+        }
     }
 }

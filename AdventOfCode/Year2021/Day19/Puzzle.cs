@@ -46,10 +46,6 @@ namespace AdventOfCode.Year2021.Day19
 
         private async void Part1()
         {
-            var socketClient = new SocketClient.SocketClient();
-
-            socketClient.Send();
-            
             var firstScanner = scanners[0];
             firstScanner.Calibrated = true;
             
