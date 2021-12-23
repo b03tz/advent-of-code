@@ -112,7 +112,7 @@ namespace AdventOfCode.Year2021.Day22
                 foreach (var c in newCubes)
                     result.Add(c);
             }
-            
+            Console.WriteLine($"Total cubes: {result.Count}");
             Console.WriteLine($"Part 2 result - {result.Aggregate(0L, (totalVolume, c) => totalVolume + CalculateVolume(c))}");
         }
 
