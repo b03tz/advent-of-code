@@ -104,6 +104,9 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <None Remove="Year2021\Day2\input.txt" />
+      <Content Include="Year2021\Day24\originalinput.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="Year2021\Day2\input.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
@@ -247,6 +250,7 @@
       <Content Include="Year2020\Day1\input.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <None Remove="Year2021\Day24\check.json" />
     </ItemGroup>
 
     <ItemGroup>

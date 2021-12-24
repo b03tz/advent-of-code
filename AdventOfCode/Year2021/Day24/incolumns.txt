@@ -1,0 +1,111 @@
+﻿inp w       inp w        inp w      inp w         inp w        inp w         inp w        inp w        inp w        inp w         inp w          inp w          inp w           inp w                
+eql x 0     eql x 0      eql x 0    eql x 0       eql x 0      div z 26      div z 26     div z 1      div z 26     eql x 0       add x z        add x z        add x z         add x z                                           
+add y 25    add y 25     add y 25   add y 25      add y 25     eql x 0       eql x 0      eql x 0      eql x 0      add y 25      mod x 26       mod x 26       mod x 26        mod x 26                                                    
+mul y x     mul y x      mul y x    mul y x       mul y x      add y 25      add y 25     add y 25     add y 25     mul y x       div z 26       div z 26       div z 26        div z 26                                               
+add y 1     add y 1      add y 1    add y 1       add y 1      mul y x       mul y x      mul y x      mul y x      add y 1       add x -8       add x -5       add x -10       add x -7                                            
+mul z y     mul z y      mul z y    mul z y       mul z y      add y 1       add y 1      add y 1      add y 1      mul z y       eql x w        eql x w        eql x w         eql x w                                        
+mul y 0     mul y 0      mul y 0    mul y 0       mul y 0      mul z y       mul z y      mul z y      mul z y      mul y 0       eql x 0        eql x 0        eql x 0         eql x 0                                        
+add y w     add y w      add y w    add y w       add y w      mul y 0       mul y 0      mul y 0      mul y 0      add y w       add y 25       add y 25       add y 25        add y 25                                           
+add y 14    add y 2      add y 1    add y 13      add y 5      add y w       add y w      add y w      add y w      add y 13      mul y x        mul y x        mul y x         mul y x                                              
+mul y x     mul y x      mul y x    mul y x       mul y x      add y 5       add y 5      add y 9      add y 3      mul y x       add y 1        add y 1        add y 1         add y 1                                        
+add z y     add z y      add z y    add z y       add z y      mul y x       mul y x      mul y x      mul y x      add z y       mul z y        mul z y        mul z y         mul z y                                        
+                                                                                                                                  mul y 0        mul y 0        mul y 0         mul y 0 
+                                                                                                                                  add y w        add y w        add y w         add y w 
+                                                                                                                                  add y 2        add y 1        add y 11        add y 8  
+                                                                                                                                  mul y x        mul y x        mul y x         mul y x 
+                                                                                                                                  add z y        add z y        add z y         add z y 
+                                                                                                                                                            
+                                                                                                                                                            
+ 0  14, 14                  10, 2                                                                                                                                                            
+ 1  14, 2                   15, 16        
+ 2  14, 1                   14, 9
+ 3  12, 13                  15, 0
+ 4  15, 5                   -8, 1
+ 5  -12, 5                  10, 12
+ 6  -12, 5                  -16, 6
+ 7  12, 9                   -4, 6
+ 8  -7, 3                   11, 3
+ 9  13, 13                  -3, 5
+10  -8, 2                   12, 9
+11  -5, 1                   -7, 3
+12  -10, 11                 -15, 2
+13  -7, 8                   -7, 3   
+
+PUSH input[0] + 14
+PUSH input[1] + 2
+PUSH input[2] + 1
+PUSH input[3] + 13
+PUSH input[4] + 5
+POP. Must have input[5] == popped_value - 12
+POP. Must have input[6] == popped_value - 12
+PUSH input[7] + 9
+POP. Must have input[8] == popped_value - 7
+PUSH input[9] + 13
+POP. Must have input[10] == popped_value - 8
+POP. Must have input[11] == popped_value - 5
+POP. Must have input[12] == popped_value - 10
+POP. Must have input[13] == popped_value - 7
+
+input[5] = input[4] - 7
+input[6] = input[3] + 1
+input[8] = input[7] + 2
+input[10] = input[9] + 5
+input[11] = input[2] - 4
+input[12] = input[1] - 8
+input[13] = input[0] + 7
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

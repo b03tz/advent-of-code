@@ -6,8 +6,8 @@ namespace AdventOfCode
     class Program
     {
         public static int Year = 2021;
-        public static int SkipDays = 21;
-        public static int CurrentDay = 22;
+        public static int SkipDays = 23;
+        public static int CurrentDay = 24;
         
         static void Main(string[] args)
         {

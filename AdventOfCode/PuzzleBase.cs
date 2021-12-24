@@ -77,8 +77,10 @@ namespace AdventOfCode
             return File.ReadAllLines(GetPuzzleFilename());
         }
 
-        public void TestExpected(string actual, string expected)
+        public void TestExpected<TType>(TType actual, TType expected)
         {
+            var actualString = actual.ToString();
+            var expectedString = expected.ToString();
             var color = Console.ForegroundColor;
 
             Console.ForegroundColor = ConsoleColor.Magenta;
@@ -88,7 +90,7 @@ namespace AdventOfCode
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.Write("ACTUAL  : ");
             Console.ForegroundColor = ConsoleColor.Red;
-            if (actual == expected)
+            if (actualString == expectedString)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
             }
@@ -143,6 +145,11 @@ namespace AdventOfCode
             var testPrefix = IsTesting ? "test" : "";
             
             return $"Year{Program.Year}\\Day{Day}\\{testPrefix}input.txt";
+        }
+        
+        public string GetPuzzlePath()
+        {
+            return $"Year{Program.Year}\\Day{Day}\\";
         }
     }
 }
