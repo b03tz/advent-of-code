@@ -55,17 +55,18 @@ namespace AdventOfCode.Year2021.Day25
             
             var isUpdated = false;
             var movedEast = new HashSet<(int, int)>();
-            for (var row = 0; row < fishArray.GetLength(0); row++)
+            for (var row = fishArray.GetLength(0) - 1; row >= 0; row--)
             {
-                for (var col = 0; col < fishArray.GetLength(1); col++)
+                for (var col = fishArray.GetLength(1) - 1; col >= 0; col--)
                 {
-                    if (fishArray[row, col] != East && !movedEast.Contains((row, col)))
+                    var contains = movedEast.Contains((row, col));
+                    if (fishArray[row, col] != East && !contains)
                     {
                         newArray[row, col] = fishArray[row, col];
                         continue;
                     }
 
-                    if (movedEast.Contains((row, col)))
+                    if (contains)
                         continue;
 
                     var r = CanMoveRight(fishArray, row, col);
@@ -91,17 +92,18 @@ namespace AdventOfCode.Year2021.Day25
             var newArray = new char[fishArray.GetLength(0), fishArray.GetLength(1)];
             
             var movedSouth = new HashSet<(int, int)>();
-            for (var row = 0; row < fishArray.GetLength(0); row++)
+            for (var row = fishArray.GetLength(0) - 1; row >= 0; row--)
             {
-                for (var col = 0; col < fishArray.GetLength(1); col++)
+                for (var col = fishArray.GetLength(1) - 1; col >= 0; col--)
                 {
-                    if (fishArray[row, col] != South && !movedSouth.Contains((row, col)))
+                    var contains = movedSouth.Contains((row, col));
+                    if (fishArray[row, col] != South && !contains)
                     {
                         newArray[row, col] = fishArray[row, col];
                         continue;
                     }
 
-                    if (movedSouth.Contains((row, col)))
+                    if (contains)
                         continue;
 
                     var r = CanMoveDown(fishArray, row, col);
