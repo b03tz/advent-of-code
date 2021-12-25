@@ -14,8 +14,6 @@ namespace AdventOfCode.Year2021.Day24
         {
             this.Init(24, false);
             var lines = this.GetPuzzleLines();
-
-            var unit = new LogicUnit(lines);
             
             // This puzzle is not finished.
             // I wrote the machine but it was just a boring puzzle.
@@ -23,51 +21,16 @@ namespace AdventOfCode.Year2021.Day24
             // because I was really up for some die hard programming and not figuring out
             // a formula.
             // Had a friend calculate these for me! Good day sir!
-        }
-
-        public void Solve(long from, long to, LogicUnit logicUnit)
-        {
-            //var modelNumber = 13579246899999;
-            var modelNumber = from;
-            var iteration = 0;
-            var perIteration = 50000;
-            while(modelNumber >= to)
-            {
-                if (iteration % perIteration == 0)
-                {
-                    Console.WriteLine($"Iterated {perIteration} ({modelNumber}) ({from} / {to})");
-                }
-
-                iteration++;
-                var modelString = modelNumber.ToString();
-                if (modelString.IndexOf("0") != -1)
-                {
-                    modelNumber--;
-                    continue;
-                }
-
-                var modelList = modelString.ToList();
-                for (var i = 0; i < modelList.Count; i++)
-                {
-                    logicUnit.Execute(modelList[i].ToString(), i);
-                    //logicUnit.PrintMemory();
-                }
-
-                if (logicUnit.IsValid())
-                {
-                    Console.WriteLine(modelNumber);
-                    logicUnit.PrintMemory();
-                }
-
-                if (logicUnit.GetZ() < 5000)
-                {                    
-                    Console.WriteLine(modelNumber);
-                    logicUnit.PrintMemory();
-                }
-                
-                logicUnit.Reset();
-                modelNumber--;
-            }
+            // The lines below do confirm however that my machine would have worked if I'd 
+            // bruteforced it ;p
+            
+            var unit = new LogicUnit(lines);
+            
+            var part1 = unit.Calculate(29989297949519);
+            var part2 = unit.Calculate(19518121316118);
+            
+            var part1Valid = part1 == 0;
+            var part2Valid = part2 == 0;
         }
     }
 
