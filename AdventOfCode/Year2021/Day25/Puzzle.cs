@@ -13,7 +13,7 @@ namespace AdventOfCode.Year2021.Day25
         
         public Puzzle()
         {
-            this.Init(25, true);
+            this.Init(25, false);
             var lines = this.GetPuzzleLines();
 
             map = new char[lines.Count(),lines.First().Length];
@@ -31,25 +31,25 @@ namespace AdventOfCode.Year2021.Day25
 
         private void Part1(char[,] fishArray)
         {
-            var iterations = 0;
-            PrintMap(fishArray);
+            var iterations = 1;
+
             Console.WriteLine(" ");
             while (true)
             {
-                var result = Step(fishArray);
-                if (!result.changed)
-                    break;
+                var stepEast = StepEast(fishArray);
+                var stepSouth = StepSouth(stepEast.newArray);
                 
-                fishArray = result.newArray;
+                if (!stepEast.changed && !stepSouth.changed)
+                    break;
+
+                fishArray = stepSouth.newArray;
                 iterations++;
-                //rintMap(fishArray);
-                //Console.WriteLine(" ");
             }
             
             Console.WriteLine(iterations);
         }
 
-        private (bool changed, char[,] newArray) Step(char[,] fishArray)
+        private (bool changed, char[,] newArray) StepEast(char[,] fishArray)
         {
             var newArray = new char[fishArray.GetLength(0), fishArray.GetLength(1)];
             
@@ -66,9 +66,7 @@ namespace AdventOfCode.Year2021.Day25
                     }
 
                     if (movedEast.Contains((row, col)))
-                    {
                         continue;
-                    }
 
                     var r = CanMoveRight(fishArray, row, col);
                     if (r.canMove)
@@ -77,7 +75,6 @@ namespace AdventOfCode.Year2021.Day25
                         newArray[row, col] = '.';
                         newArray[row, r.nextCol] = East;
                         movedEast.Add((row, r.nextCol));
-                        //PrintMap(newArray);
                         continue;
                     }
                     
@@ -85,7 +82,13 @@ namespace AdventOfCode.Year2021.Day25
                 }
             }
 
-            fishArray = newArray;
+            return (isUpdated, newArray);
+        }
+
+        public (bool changed, char[,] newArray) StepSouth(char[,] fishArray)
+        {
+            var isUpdated = false;
+            var newArray = new char[fishArray.GetLength(0), fishArray.GetLength(1)];
             
             var movedSouth = new HashSet<(int, int)>();
             for (var row = 0; row < fishArray.GetLength(0); row++)
@@ -99,9 +102,7 @@ namespace AdventOfCode.Year2021.Day25
                     }
 
                     if (movedSouth.Contains((row, col)))
-                    {
                         continue;
-                    }
 
                     var r = CanMoveDown(fishArray, row, col);
                     if (r.canMove)
@@ -111,7 +112,6 @@ namespace AdventOfCode.Year2021.Day25
                         newArray[r.nextRow, col] = South;
                         movedSouth.Add((r.nextRow, col));
                         continue;
-                        //PrintMap(newArray);
                     }
 
                     newArray[row, col] = fishArray[row, col];
@@ -141,9 +141,7 @@ namespace AdventOfCode.Year2021.Day25
             var nextCol = 0;
             
             if (col < fishArray.GetLength(1) - 1)
-            {
                 nextCol = col + 1;
-            }
 
             nextChar = fishArray[row, nextCol];
             return nextChar == '.' ? (true, nextCol) : (false, nextCol);
