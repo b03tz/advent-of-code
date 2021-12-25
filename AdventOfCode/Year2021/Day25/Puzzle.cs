@@ -13,7 +13,7 @@ namespace AdventOfCode.Year2021.Day25
         
         public Puzzle()
         {
-            this.Init(25, false);
+            this.Init(25, true);
             var lines = this.GetPuzzleLines();
 
             map = new char[lines.Count(),lines.First().Length];
@@ -132,10 +132,7 @@ namespace AdventOfCode.Year2021.Day25
             }
 
             nextChar = fishArray[nextRow, col];
-            if (nextChar == '.')
-                return (true, nextRow);
-            
-            return (false, nextRow);
+            return nextChar == '.' ? (true, nextRow) : (false, nextRow);
         }
 
         private (bool canMove, int nextCol) CanMoveRight(char[,] fishArray, int row, int col)
@@ -149,10 +146,7 @@ namespace AdventOfCode.Year2021.Day25
             }
 
             nextChar = fishArray[row, nextCol];
-            if (nextChar == '.')
-                return (true, nextCol);
-
-            return (false, nextCol);
+            return nextChar == '.' ? (true, nextCol) : (false, nextCol);
         }
 
         private void PrintMap(char[,] fishArray)
