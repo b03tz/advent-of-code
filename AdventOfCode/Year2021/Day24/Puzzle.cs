@@ -26,11 +26,16 @@ namespace AdventOfCode.Year2021.Day24
             
             var unit = new LogicUnit(lines);
             
-            var part1 = unit.Calculate(29989297949519);
-            var part2 = unit.Calculate(19518121316118);
+            var highestModel = 29989297949519;
+            var lowestModel = 19518121316118;
+            var part1 = unit.Calculate(highestModel);
+            var part2 = unit.Calculate(lowestModel);
             
             var part1Valid = part1 == 0;
             var part2Valid = part2 == 0;
+            
+            Console.WriteLine($"Part 1 - {highestModel} valid = {part1Valid}");
+            Console.WriteLine($"Part 2 - {lowestModel} valid = {part2Valid}");
         }
     }
 
